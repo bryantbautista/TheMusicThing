@@ -1,1 +1,2 @@
 # TheMusicThing
+revolutionary music platform
