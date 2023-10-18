@@ -1,11 +1,11 @@
-<html>
-    <body>
-        <form action="/handlelogin" method="POST">
-            <label for="username">Username: </label>
-            <input type="text" name="username" required>
-            <label for="password">Password: </label>
-            <input type="password" name="password" required">
-            <input type="submit" value="Submit">
-        </form>
-    </body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}The Music Thing: Home{% endblock %}
+ {% block content %}
+{% if user.is_authenticated %}
+    Hi {{user.username}}!
+{% else %}
+    <p>You are not logged in.</p>
+    <a href="{% url 'login' %}">Login</a>
+{% endif %}
+{% endblock %}
