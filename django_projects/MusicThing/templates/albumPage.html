@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Album Page</title>
+    <style>
+        /* Basic styling for the album page */
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+        }
+        .album {
+            width: 300px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .album img {
+            max-width: 100%;
+            border-radius: 5px;
+        }
+        .song-name {
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        /* Styling for the star rating */
+        .rating {
+            unicode-bidi: bidi-override;
+            direction: ltr; /* Change the direction to left-to-right */
+            position: relative;
+        }
+        .rating > span {
+            display: inline-block;
+            position: relative;
+            width: 1.1em;
+            cursor: pointer;
+            font-size: 20px;
+            margin-right: 5px;
+            color: #ffcc00; /* Yellow color for stars */
+        }
+        .rating > span:hover:before {
+            content: "\2605";
+            position: absolute;
+        }
+        .rating > span.active:before {
+            content: "\2605";
+            position: absolute;
+        }
+        .rating > span:before {
+            content: "\2606";
+            position: absolute;
+        }
+        .rating-display {
+            margin-top: 20px; /* Increased margin-top for spacing */
+            font-weight: bold;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="album">
+        <img src="album-cover.jpg" alt="Album Cover">
+        <div class="song-name">Song Name</div>
+        <div class="rating" id="rating">
+            <span class="star" data-rating="1"></span>
+            <span class="star" data-rating="2"></span>
+            <span class="star" data-rating="3"></span>
+            <span class="star" data-rating="4"></span>
+            <span class="star" data-rating="5"></span>
+        </div>
+        <div class="rating-display" id="rating-display">0/5 stars</div>
+    </div>
+
+    <script>
+        const stars = document.querySelectorAll('.star');
+        const ratingDisplay = document.getElementById('rating-display');
+        let userRating = 0;
+
+        stars.forEach(star => {
+            star.addEventListener('mouseover', () => {
+                const rating = parseInt(star.getAttribute('data-rating'));
+                highlightStars(rating);
+            });
+
+            star.addEventListener('click', () => {
+                userRating = parseInt(star.getAttribute('data-rating'));
+                updateRatingDisplay();
+            });
+        });
+
+        function highlightStars(rating) {
+            stars.forEach(star => {
+                const starRating = parseInt(star.getAttribute('data-rating'));
+                star.classList.toggle('active', starRating <= rating);
+            });
+        }
+
+        function updateRatingDisplay() {
+            ratingDisplay.textContent = userRating + '/5 stars';
+        }
+    </script>
+</body>
+</html>
+
+
+
