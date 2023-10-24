@@ -4,18 +4,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <title>The Music Thing</title>
+
     <style>
-        /* Temporary Header/Footer + Section CSS */
-        header,
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Header CSS */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 10px;
+            background: #38618C;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 32px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .navbar a {
+            position: relative;
+            font-size: 18px;
+            color: #fff;
+            font-weight: 500;
+            text-decoration: none;
+            margin-left: 40px;
+        }
+
+        .navbar a::before {
+            content: '';
+            position: absolute;
+            top: 110%;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #fff;
+            transition: .3s
+        }
+
+        .navbar a:hover::before {
+            width: 100%;
+        }
+
+
+        .section {
+            padding-top: 100px;
+        }
+
+        /* Footer CSS */
         footer {
             background-color: #f1f1f1;
             padding: 10px;
-            text-align: left;
-        }
-
-        .section {
-            padding: 20px;
+            text-align: center;
         }
     </style>
 </head>
@@ -23,20 +78,22 @@
 <body>
 
     <!-- Header Section -->
-    <header>
-        <h1>The Music Thing</h1>
-        <nav>
-            <a href="#">Top</a> |
-            <a href="#">Random</a> |
+    <header class="header">
+        <a href="#" class="logo">The Music Thing</a>
+
+        <nav class="navbar">
+            <a href="#">Top</a>
+            <a href="#">Random</a>
             <a href="#">Profile</a> ▾ <!-- Dropdown menu icon for Profile -->
         </nav>
-        <input type="search" placeholder="Search">
-        <h2>About The Music Thing™</h2>
-        <p>* Description goes here... *</p>
     </header>
 
     <!-- Main Content -->
     <div class="section">
+        <input type="search" placeholder="Search">
+        <h2>About The Music Thing™</h2>
+        <p>* Description goes here... *</p>
+        
         <h3>Top 10 Artists</h3>
         <a href="#">View More</a>
 
@@ -66,7 +123,7 @@
     <!-- Footer Section -->
     <footer>
         <img src="#" alt="Logo placeholder" width="100"> <!-- Logo Placeholder -->
-        <p>&copy; 2023 SJSU, Inc</p>
+        <p>&copy;2023 SJSU, Inc</p>
         <div class="socials">
             <!-- Social Media Icons or Links Placeholder -->
         </div>
