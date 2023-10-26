@@ -1,12 +1,24 @@
 {% extends "base.html" %}
 
-{% block title %}Login{% endblock %}
-
 {% block content %}
-    <h2>Log in</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Log in</button>
-    </form>
+<h2>Login</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    {% for hidden_field in form.hidden_fields %}
+      {{ hidden_field.errors }}
+      {{ hidden_field }}
+    {% endfor %}
+    <table border="1">
+        {% for field in form.visible_fields %}
+              {{ field.errors }}
+              {{ field.help_text }}
+        {% endfor %}
+      </table>
+    {{ form.username.label_tag }} {{ form.username }}
+    {{ form.password.label_tag }} {{ form.password }}
+    <button type="submit">Login</button>
+</form>
+
 {% endblock %}
