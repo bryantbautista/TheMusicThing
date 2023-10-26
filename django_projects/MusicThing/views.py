@@ -6,9 +6,6 @@ from django import forms
 # Create your views here.
 
 def index(request):
-    context = {
-        'test_var':1
-    }
-    return render(request, 'index.html', context)
+    return render(request, 'index.html')
 def helloworld2(request):
     return HttpResponse("Hello, world 2!")
