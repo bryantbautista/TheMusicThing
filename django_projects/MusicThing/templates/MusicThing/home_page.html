@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
+    <script src="https://kit.fontawesome.com/92d70a2fd8.js" crossorigin="anonymous"></script>
     <title>The Music Thing</title>
 
     <style>
@@ -62,7 +63,7 @@
             width: 100%;
         }
 
-
+        /* Main content CSS */
         .section-top {
             padding-top: 100px;
             text-align: center;
@@ -73,6 +74,7 @@
             justify-content: right;
             align-items: flex-start;
             width: 100%;
+            padding-bottom: 50px;
         }
 
         .section-artists,
@@ -121,6 +123,33 @@
             background: #38618C;
             margin: 20px 0;
         }
+
+        /* Search Bar CSS */
+
+        .search-bar {
+            background-color: #eee;
+            width: 550px;
+            height: 50px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0px 25px;
+            margin: 0 auto;
+        }
+
+        input {
+            width: 525px;
+            border: none;
+            outline: none;
+            background: none;
+            font-size: 18px;
+        }
+
+        .fa-solid:hover {
+            color: #4873a1;
+            cursor: pointer;
+        }
     </style>
 </head>
 
@@ -139,7 +168,10 @@
 
     <!-- Main Content -->
     <div class="section-top">
-        <input type="search" placeholder="Search">
+        <div class="search-bar">
+            <input type="text" placeholder="Search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </div>
         <h2>About The Music Thing™</h2>
         <p>* Description goes here... *</p>
 
