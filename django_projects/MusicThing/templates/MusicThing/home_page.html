@@ -6,12 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <title>The Music Thing</title>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
-        
+
         body {
             font-family: 'Poppins', sans-serif;
         }
@@ -62,15 +63,63 @@
         }
 
 
-        .section {
+        .section-top {
             padding-top: 100px;
+            text-align: center;
+        }
+
+        .content-container {
+            display: flex;
+            justify-content: right;
+            align-items: flex-start;
+            width: 100%;
+        }
+
+        .section-artists,
+        .section-releases {
+            padding: 0 15px;
+        }
+
+        .section-artists {
+            width: 25%;
+            margin-right: 5%;
+        }
+
+        .section-releases {
+            width: 35%;
+            margin-left: 5%
         }
 
         /* Footer CSS */
         footer {
-            background-color: #f1f1f1;
+            /*background-color: #f1f1f1;*/
+            background: #38618C;
             padding: 10px;
             text-align: center;
+        }
+
+        footer a {
+            position: relative;
+            font-size: 18px;
+            color: #fff;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        footer p {
+            position: relative;
+            font-size: 18px;
+            color: #fff;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        hr {
+            border: none;
+            height: 4px;
+            /*background-color: #e0e0e0;*/
+            background: #38618C;
+            margin: 20px 0;
         }
     </style>
 </head>
@@ -89,47 +138,54 @@
     </header>
 
     <!-- Main Content -->
-    <div class="section">
+    <div class="section-top">
         <input type="search" placeholder="Search">
         <h2>About The Music Thing™</h2>
         <p>* Description goes here... *</p>
-        
-        <h3>Top 10 Artists</h3>
-        <a href="#">View More</a>
 
-        <div class="artist-card">
-            <img src="#" alt="Artist Image Placeholder" width="100">
-            <h4>Name</h4>
-            <p>Rating ★</p>
-            <p>Genres</p>
-            <p>Description</p>
-            <button>Listen</button>
+        <hr>
+    </div>
+
+    <!-- Artists and New Releases Content -->
+    <div class="content-container">
+        <div class="section-artists">
+            <h3>Top 10 Artists</h3>
+
+            <div class="artist-card">
+                <img src="#" alt="Artist Image Placeholder" width="100">
+                <h4>Name</h4>
+                <p>Rating ★</p>
+                <p>Genre</p>
+                <p>Description</p>
+                <a href="#">View More</a>
+            </div>
         </div>
+        <hr>
 
-        <h3>New Releases</h3>
-        <a href="#">View More</a>
+        <div class="section-releases">
+            <h3>New Releases</h3>
 
-        <div class="song-card">
-            <img src="#" alt="Song Image Placeholder" width="100">
-            <h4>Song Name by Author</h4>
-            <p>Rating ★</p>
-            <p>Genres</p>
-            <p>Description</p>
+            <div class="song-card">
+                <img src="#" alt="Song Image Placeholder" width="100">
+                <h4>Song Name by Author</h4>
+                <p>Rating ★</p>
+                <p>Genre</p>
+                <p>Description</p>
+                <a href="#">View More</a>
+            </div>
         </div>
-
-        <button>See More Artists?</button>
     </div>
 
     <!-- Footer Section -->
     <footer>
-        <img src="#" alt="Logo placeholder" width="100"> <!-- Logo Placeholder -->
+        <img src="#" alt="(MusicThing Logo)" width="100"> <!-- Logo Placeholder -->
         <p>&copy;2023 SJSU, Inc</p>
         <div class="socials">
             <!-- Social Media Icons or Links Placeholder -->
         </div>
         <nav>
-            <a href="#">INFO</a> |
-            <a href="#">FAQ</a> |
+            <a href="#">INFO |</a>
+            <a href="#">FAQ |</a>
             <a href="#">Support Us/Feedback</a>
         </nav>
     </footer>
