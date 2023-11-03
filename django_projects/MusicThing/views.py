@@ -16,6 +16,8 @@ def logoutView(request):
 
 def loginView(request):
     error = ""
+    if request.user.is_authenticated:
+        return HttpResponseRedirect('/')
     if request.method == "POST":
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -32,6 +34,8 @@ def loginView(request):
     return render(request, "registration/login.html", {"form": form, "error":error})
 
 def registerView(request):
+    if request.user.is_authenticated:
+        return HttpResponseRedirect('/')
     if request.method == "POST":
         form = RegistrationForm(request.POST)
         if form.is_valid():
