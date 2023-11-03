@@ -7,7 +7,7 @@ class LoginForm(forms.Form):
     password = forms.CharField(label="Password", max_length=30, widget=forms.PasswordInput)
 
 class RegistrationForm(UserCreationForm):
-    emails = forms.EmailField()
+    email = forms.EmailField()
 
     class Meta:
         model = User
