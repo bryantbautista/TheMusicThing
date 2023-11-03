@@ -1,5 +1,5 @@
-from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render, redirect
+from django.contrib import messages
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from .forms import LoginForm, RegistrationForm
@@ -12,34 +12,33 @@ def index(request):
 
 def logoutView(request):
     logout(request)
-    return HttpResponseRedirect('/')
+    return redirect('/')
 
 def loginView(request):
-    error = ""
     if request.user.is_authenticated:
-        return HttpResponseRedirect('/')
+        return redirect('/')
     if request.method == "POST":
         form = LoginForm(request.POST)
         if form.is_valid():
             user = authenticate(username = form.cleaned_data["username"], password = form.cleaned_data["password"])
             if user is not None:
                 login(request, user)
-                return HttpResponseRedirect('/')
+                return redirect('/')
             else:
-                error = "User not found."
+                messages.error(request, "User not found.")
         else:
-            error = "Invalid input."
+            messages.error(request, "Invalid input.")
     else:
         form = LoginForm()
-    return render(request, "registration/login.html", {"form": form, "error":error})
+    return render(request, "registration/login.html", {"form": form})
 
 def registerView(request):
     if request.user.is_authenticated:
-        return HttpResponseRedirect('/')
+        return redirect('/')
+    form = RegistrationForm()
     if request.method == "POST":
         form = RegistrationForm(request.POST)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect('/login')
-    form = RegistrationForm()
+            return redirect('/login')
     return render(request, "registration/register.html", {"form": form})
