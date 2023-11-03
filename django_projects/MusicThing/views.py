@@ -32,5 +32,10 @@ def loginView(request):
     return render(request, "registration/login.html", {"form": form, "error":error})
 
 def registerView(request):
-    form = UserCreationForm()
+    if request.method == "POST":
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect('/login')
+    form = RegistrationForm()
     return render(request, "registration/register.html", {"form": form})
