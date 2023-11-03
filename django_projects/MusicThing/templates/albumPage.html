@@ -7,13 +7,15 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            background-color: #0c0b0b;
-        }
+            background-image: url('https://images.unsplash.com/photo-1525362081669-2b476bb628c3?auto=format&fit=crop&q=60&w=700&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxleHBsb3JlLWZlZWR8MTh8fHxlbnwwfHx8fHw%3D'); /* Replace 'your-image-url.jpg' with the actual URL or path to your image */
+            background-size: auto;
+            background-repeat: repeat; 
+}
         .album {
             width: 300px;
             margin: 0 auto;
             padding: 20px;
-            border: 1px solid #e90d0d;
+            border: 1px solid #0d53e9;
             border-radius: 5px;
             background-color: #f4f8f8;
             box-shadow: 0 0 10px rgba(220, 21, 21, 0.1);
@@ -72,6 +74,13 @@
             <span class="star" data-rating="5"></span>
         </div>
         <div class="rating-display" id="rating-display">0/5 stars</div>
+        <div class="song-name">Artist: </div>
+        <div class="song-name">Genre: </div>
+        <div class="song-name">Release Date: </div>
+        <div class="song-name">Album: </div>
+        <div class="song-name">Duration: </div>
+        <div class="song-name">Average Rating</div>
+        <div class="song-name">Song Name</div>
     </div>
 
     <script>
