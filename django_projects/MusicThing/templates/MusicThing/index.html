@@ -4,6 +4,9 @@
  {% block content %}
 {% if user.is_authenticated %}
     <h1>Hi {{user.username}}!</h1>
+    {% for album in popAlbums %}
+        {{ album.Name }}
+    {% endfor %}
     <a href="{% url 'logout' %}">Log out</a>
 {% else %}
     <p>You are not logged in.</p>
