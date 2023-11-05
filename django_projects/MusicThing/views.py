@@ -47,4 +47,33 @@ def registerView(request):
     return render(request, "registration/register.html", {"form": form})
 
 def homeView(request):
-    return render(request, "homePage.html")
+    # TODO: Move me to external file.
+
+    SPOTIFY_API_TOKEN_URL = 'https://accounts.spotify.com/api/token'
+    SPOTIFY_API_NEW_RELEASES = 'https://api.spotify.com/v1/browse/new-releases?country=US&limit=5'
+    SPOTIFY_API_CLIENT_ID = '9aae27d322434eebbfdde75b04a301e4'
+    SPOTIFY_API_CLIENT_SECRET = '1857c1bed7304fe49712638e2927111a'
+
+    import urllib.request
+    import urllib.parse
+    import json
+
+    data = urllib.parse.urlencode({
+        'grant_type': 'client_credentials', 
+        'client_id': SPOTIFY_API_CLIENT_ID, 
+        'client_secret': SPOTIFY_API_CLIENT_SECRET})
+    data = data.encode('ascii')
+    token = None
+
+    with urllib.request.urlopen(SPOTIFY_API_TOKEN_URL, data) as f:
+        resp = json.loads(f.read().decode('utf-8'))
+        token = resp['access_token'] # {"access_token":"BQBW","token_type":"Bearer","expires_in":3600}
+
+    releases = None
+    if token:
+        req = urllib.request.Request(SPOTIFY_API_NEW_RELEASES)
+        req.add_header('Authorization', 'Bearer ' + token)
+        req.add_header('Accept', 'application/json')
+        releases = urllib.request.urlopen(req).read().decode('utf-8')
+
+    return render(request, "homePage.html", {"releases": releases})
