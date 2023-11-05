@@ -45,3 +45,6 @@ def registerView(request):
             form.save() # Updates the DB
             return redirect('/login')
     return render(request, "registration/register.html", {"form": form})
+
+def homeView(request):
+    return render(request, "homePage.html")
