@@ -181,16 +181,41 @@
     <!-- Artists and New Releases Content -->
     <div class="content-container">
         <div class="section-artists">
-            <h3>Top 10 Artists</h3>
+            <h3>Top 10 Songs</h3>
+            <div id="artists-cards"></div>
+            <script>
+              (function() {
+                {% autoescape off %}
+                const artists = {{ artists }};
+                {% endautoescape %}
+                const container = document.getElementById('artists-cards');
+                artists.items.sort((a,b)=>a.track.popularity>b.track.popularity?-1:1).forEach((item) => {
+                    console.log(item);
+                    const card = container.appendChild(document.createElement('div'));
+                    card.className = 'artist-card';
+                    const img = card.appendChild(document.createElement('img'));
+                    img.src = item.track.album.images[0].url;
+                    img.width = 100;
+                    img.alt = '';
+                    card.appendChild(document.createElement('h4')).textContent = 
+                      item.track.name + ' by ' + item.track.artists[0].name;
+                    card.appendChild(document.createElement('p')).textContent = 
+                      'Release Date: ' + item.track.album.release_date;
+                    card.appendChild(document.createElement('p')).textContent = 
+                      'Popularity: ' + item.track.popularity;
+                      
+                });
+              })();
+            </script>
 
-            <div class="artist-card">
+            <!--div class="artist-card">
                 <img src="#" alt="Artist Image Placeholder" width="100">
                 <h4>Name</h4>
                 <p>Rating ★</p>
                 <p>Genre</p>
                 <p>Description</p>
                 <a href="#">View More</a>
-            </div>
+            </div-->
         </div>
         <hr>
 
@@ -221,14 +246,14 @@
               })();
             </script>
 
-            <div class="song-card">
+            <!--div class="song-card">
                 <img src="#" alt="Song Image Placeholder" width="100">
                 <h4>Song Name by Author</h4>
                 <p>Rating ★</p>
                 <p>Genre</p>
                 <p>Description</p>
                 <a href="#">View More</a>
-            </div>
+            </div-->
         </div>
     </div>
 
