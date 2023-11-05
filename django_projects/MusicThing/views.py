@@ -49,9 +49,10 @@ def registerView(request):
 def homeView(request):
     # TODO: Move me to external file.
 
+    LIMIT = 10
     SPOTIFY_API_TOKEN_URL = 'https://accounts.spotify.com/api/token'
-    SPOTIFY_API_NEW_RELEASES = 'https://api.spotify.com/v1/browse/new-releases?country=US&limit=5'
-    SPOTIFY_API_TOP_ARTISTS = 'https://api.spotify.com/v1/playlists/37i9dQZEVXbMDoHDwVN2tF/tracks?market=US&limit=5'
+    SPOTIFY_API_NEW_RELEASES = 'https://api.spotify.com/v1/browse/new-releases?country=US&limit=%s' % LIMIT
+    SPOTIFY_API_TOP_ARTISTS = 'https://api.spotify.com/v1/playlists/37i9dQZEVXbMDoHDwVN2tF/tracks?market=US&limit=%s' % LIMIT
     SPOTIFY_API_CLIENT_ID = '9aae27d322434eebbfdde75b04a301e4'
     SPOTIFY_API_CLIENT_SECRET = '1857c1bed7304fe49712638e2927111a'
 
