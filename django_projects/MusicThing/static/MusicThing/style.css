@@ -1,0 +1,20 @@
+body,
+input,
+select,
+button {
+    font-family: arial;
+    font-size: 13px;
+}
+
+header,
+footer,
+main {
+    max-width: 1024px;
+    margin: 0 auto;
+}
+
+.login {
+    text-align: center;
+}
+
+.register {}
