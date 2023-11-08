@@ -2,8 +2,12 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import UserCreationForm
+from django.http import HttpResponse
 from .forms import LoginForm, RegistrationForm
 from MusicThing.models import Albums, Artists, Genres, Ratings
+import urllib.request
+import urllib.parse
+import json
 
 
 # Create your views here.
@@ -46,6 +50,32 @@ def registerView(request):
             return redirect('/login')
     return render(request, "registration/register.html", {"form": form})
 
+def albumView(request, albumID):
+    album = Albums.objects.filter(AlbumID = albumID)
+    if len(album) != 1:
+        return HttpResponse("Album not found.")
+    return render(request, "albumPage.html", {"album":album[0]})
+
+def updateRating(request, albumID):
+    if request.user.is_authenticated is False: # If user isn't authenticated, they shouldn't be able to rate an album.
+        return redirect('/album/' + albumID)
+    
+    if request.method == "POST":
+        received_data = json.loads(request.body) # When a star is clicked, the rating is sent with JSON
+
+        matchingAlbums = Albums.objects.filter(AlbumID=albumID) # Find any albums that match the albumID in the URL. If none match, nothing should be added to the DB
+
+        if len(matchingAlbums) == 1:
+            existingRating = Ratings.objects.filter(Username=request.user.username, AlbumID=matchingAlbums[0]) # If a rating exists already, we should update it instead of adding a new entry
+
+            if len(existingRating) == 0:
+                newRating = Ratings(Username=request.user.username, AlbumID=matchingAlbums[0], Rating=received_data['rating']) # Create a new entry and add it to the DB
+                newRating.save()
+            else:
+                Ratings.objects.filter(Username=request.user.username, AlbumID=matchingAlbums[0]).update(Rating=received_data['rating']) # Update the existing entry in the DB
+
+    return redirect('/album/' + albumID)
+
 def homeView(request):
     # TODO: Move me to external file.
 
@@ -74,6 +104,7 @@ def homeView(request):
     releases = None
     artists = None
     if token:
+        request.session['spotifyrefresh'] = token
         req = urllib.request.Request(SPOTIFY_API_NEW_RELEASES)
         req.add_header('Authorization', 'Bearer ' + token)
         req.add_header('Accept', 'application/json')
