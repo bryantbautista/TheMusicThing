@@ -1,18 +1,46 @@
 <html>
+
 <head>
-    <meta charset="utf-8">
-    <title>The Music Thing: {% block title %}{% endblock %}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/92d70a2fd8.js" crossorigin="anonymous"></script>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'MusicThing/style.css' %}" >
+    <link rel="stylesheet" href="{% static 'MusicThing/homePage.css' %}">
+    <link rel="stylesheet" href="{% static 'MusicThing/login.css' %}">
+    <title>The Music Thing</title>
 </head>
+
 <body>
-    <header>[MyLogo]</header>
+    <!-- Header Section -->
+    <header class="header">
+        <a href="#" class="logo">The Music Thing</a>
+
+        <nav class="navbar">
+            <a href="#">Top</a>
+            <a href="#">Random</a>
+            <a href="#">Profile</a> ▾ <!-- Dropdown menu icon for Profile -->
+        </nav>
+    </header>
     <main>
-    {% block content %}
-    {% endblock %}
+        {% block content %}
+        {% endblock %}
     </main>
+    <!-- Footer Section -->
     <footer>
-        &copy; 2023
+        <img src="#" alt="(MusicThing Logo)" width="100"> <!-- Logo Placeholder -->
+        <p>&copy;2023 SJSU, Inc</p>
+        <div class="socials">
+            <!-- Social Media Icons or Links Placeholder -->
+        </div>
+        <nav>
+            <a href="#">INFO |</a>
+            <a href="#">FAQ |</a>
+            <a href="#">Support Us/Feedback</a>
+        </nav>
     </footer>
 </body>
+
 </html>
