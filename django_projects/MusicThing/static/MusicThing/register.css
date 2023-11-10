@@ -1,0 +1,96 @@
+/* Register Page css */
+
+.register-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    background-color: #f4f4f4;
+}
+
+.register-box {
+    max-width: 400px;
+    padding-left: 5rem;
+    padding-right: 5rem;
+    padding-top: 2rem;
+    padding-bottom: 2.5rem;
+    margin: 2rem;
+    background: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin-top: 100px;
+}
+
+.register-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.register-form p {
+    margin-bottom: 1rem;
+}
+
+.register-button {
+    background-color: #4873a1;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 20px;
+}
+
+.register-button:hover {
+    background-color: #4e93dd;
+}
+
+.register a {
+    color: #4873a1;
+    text-decoration: none;
+    margin-top: 1rem;
+}
+
+.register a:hover {
+    text-decoration: underline;
+}
+
+.login-link {
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.login-link a {
+    color: #333;
+    text-decoration: none;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+.register form input[type="text"],
+.register form input[type="password"],
+.register form input[type="email"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+h2 {
+    margin-bottom: 1rem;
+    color: #2b2a2a;
+    font-size: 28px;
+}
+
+p {
+    display: block;
+    margin-block-start: 0px;
+    margin-block-end: 0px;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+}

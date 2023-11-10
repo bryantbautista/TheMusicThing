@@ -6,7 +6,7 @@
         <h2>Login</h2>
         <form method="post" class="login-form">
             {% csrf_token %}
-
+            
             {% if messages %}
             <ul class="messages" style="background-color: red;">
                 {% for message in messages %}
