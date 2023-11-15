@@ -12,6 +12,22 @@ import json
 
 # Create your views here.
 
+def getSpotifyToken():
+    SPOTIFY_API_TOKEN_URL = 'https://accounts.spotify.com/api/token'
+    SPOTIFY_API_CLIENT_ID = '9aae27d322434eebbfdde75b04a301e4'
+    SPOTIFY_API_CLIENT_SECRET = '1857c1bed7304fe49712638e2927111a'
+    data = urllib.parse.urlencode({
+        'grant_type': 'client_credentials', 
+        'client_id': SPOTIFY_API_CLIENT_ID, 
+        'client_secret': SPOTIFY_API_CLIENT_SECRET})
+    data = data.encode('ascii')
+    token = None
+
+    with urllib.request.urlopen(SPOTIFY_API_TOKEN_URL, data) as f:
+        resp = json.loads(f.read().decode('utf-8'))
+        token = resp['access_token'] # {"access_token":"BQBW","token_type":"Bearer","expires_in":3600}
+    return token
+        
 def index(request):
     return render(request, 'index.html')
 
@@ -50,23 +66,9 @@ def registerView(request):
     return render(request, "registration/register.html", {"form": form})
 
 def albumView(request, albumID):
-    SPOTIFY_API_TOKEN_URL = 'https://accounts.spotify.com/api/token'
-    SPOTIFY_API_CLIENT_ID = '9aae27d322434eebbfdde75b04a301e4'
-    SPOTIFY_API_CLIENT_SECRET = '1857c1bed7304fe49712638e2927111a'
-    SPOTIFY_API_GETALBUM = 'https://api.spotify.com/v1/albums/'
-    data = urllib.parse.urlencode({
-        'grant_type': 'client_credentials', 
-        'client_id': SPOTIFY_API_CLIENT_ID, 
-        'client_secret': SPOTIFY_API_CLIENT_SECRET})
-    data = data.encode('ascii')
-    token = None
-
-    with urllib.request.urlopen(SPOTIFY_API_TOKEN_URL, data) as f:
-        resp = json.loads(f.read().decode('utf-8'))
-        token = resp['access_token'] # {"access_token":"BQBW","token_type":"Bearer","expires_in":3600}
-
+    token = getSpotifyToken()
     if token:
-        req = urllib.request.Request(SPOTIFY_API_GETALBUM + str(albumID))
+        req = urllib.request.Request('https://api.spotify.com/v1/albums/' + str(albumID))
         req.add_header('Authorization', 'Bearer ' + token)
         req.add_header('Accept', 'application/json')
         try:
@@ -109,23 +111,9 @@ def updateRating(request, albumID):
     if request.method == "POST":
         received_data = json.loads(request.body) # When a star is clicked, the rating is sent with JSON
 
-        SPOTIFY_API_TOKEN_URL = 'https://accounts.spotify.com/api/token'
-        SPOTIFY_API_CLIENT_ID = '9aae27d322434eebbfdde75b04a301e4'
-        SPOTIFY_API_CLIENT_SECRET = '1857c1bed7304fe49712638e2927111a'
-        SPOTIFY_API_GETALBUM = 'https://api.spotify.com/v1/albums/'
-        data = urllib.parse.urlencode({
-            'grant_type': 'client_credentials', 
-            'client_id': SPOTIFY_API_CLIENT_ID, 
-            'client_secret': SPOTIFY_API_CLIENT_SECRET})
-        data = data.encode('ascii')
-        token = None
-
-        with urllib.request.urlopen(SPOTIFY_API_TOKEN_URL, data) as f:
-            resp = json.loads(f.read().decode('utf-8'))
-            token = resp['access_token'] # {"access_token":"BQBW","token_type":"Bearer","expires_in":3600}
-
+        token = getSpotifyToken()
         if token:
-            req = urllib.request.Request(SPOTIFY_API_GETALBUM + str(albumID))
+            req = urllib.request.Request('https://api.spotify.com/v1/albums/' + str(albumID))
             req.add_header('Authorization', 'Bearer ' + token)
             req.add_header('Accept', 'application/json')
             try:
