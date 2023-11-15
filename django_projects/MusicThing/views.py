@@ -4,7 +4,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponse
 from .forms import LoginForm, RegistrationForm
-from MusicThing.models import Albums, Artists, Genres, Ratings
+from MusicThing.models import Ratings
 import urllib.request
 import urllib.parse
 import json
@@ -13,8 +13,7 @@ import json
 # Create your views here.
 
 def index(request):
-    popAlbums = Genres.objects.all()
-    return render(request, 'index.html', {"popAlbums":popAlbums})
+    return render(request, 'index.html')
 
 def logoutView(request):
     logout(request)
@@ -70,29 +69,76 @@ def albumView(request, albumID):
         req = urllib.request.Request(SPOTIFY_API_GETALBUM + str(albumID))
         req.add_header('Authorization', 'Bearer ' + token)
         req.add_header('Accept', 'application/json')
-        releases = urllib.request.urlopen(req).read().decode('utf-8')
-        print(json.loads(releases)['images'])
-
-    return render(request, "albumPage.html")
+        try:
+            album = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))
+        except:
+            return HttpResponse("Album not found.")
+        artist = album['artists'][0]['name']
+        genres = ""
+        for genre in album['genres']:
+            genres += genre
+        releasedate = album['release_date']
+        name = album['name']
+        lengthseconds = 0
+        for track in album['tracks']['items']:
+            lengthseconds += track['duration_ms']
+        lengthseconds /= 1000
+        hours = int(lengthseconds // 3600)
+        minutes = int((lengthseconds % 3600) // 60)
+        seconds = int(lengthseconds % 60)
+        if hours != 0:
+            length = "" + str(hours) + " Hours, " + str(minutes) + " Minutes, " + str(seconds) + " Seconds"
+        else:
+            length = "" + str(minutes) + " Minutes, " + str(seconds) + " Seconds"
+        allRatings = Ratings.objects.filter(AlbumID=albumID)
+        if len(allRatings) == 0:
+            avgRating = "No ratings"
+        else:
+            avgRating = 0
+            for rating in allRatings:
+                avgRating += rating.Rating
+            avgRating /= len(allRatings)
+        return render(request, "albumPage.html", {'albumID':albumID, 'artist':artist, 'genres':genres, 'albumlink': album['external_urls']['spotify'],
+                                                  'releasedate':releasedate, 'name':name, 'coverurl':album['images'][0]['url'], 'length':length, 'avgRating':avgRating})
+    return HttpResponse("Connection to spotify failed.")
 
 def updateRating(request, albumID):
     if request.user.is_authenticated is False: # If user isn't authenticated, they shouldn't be able to rate an album.
-        return redirect('/album/' + albumID)
+        return redirect('/login')
     
     if request.method == "POST":
         received_data = json.loads(request.body) # When a star is clicked, the rating is sent with JSON
 
-        matchingAlbums = Albums.objects.filter(AlbumID=albumID) # Find any albums that match the albumID in the URL. If none match, nothing should be added to the DB
+        SPOTIFY_API_TOKEN_URL = 'https://accounts.spotify.com/api/token'
+        SPOTIFY_API_CLIENT_ID = '9aae27d322434eebbfdde75b04a301e4'
+        SPOTIFY_API_CLIENT_SECRET = '1857c1bed7304fe49712638e2927111a'
+        SPOTIFY_API_GETALBUM = 'https://api.spotify.com/v1/albums/'
+        data = urllib.parse.urlencode({
+            'grant_type': 'client_credentials', 
+            'client_id': SPOTIFY_API_CLIENT_ID, 
+            'client_secret': SPOTIFY_API_CLIENT_SECRET})
+        data = data.encode('ascii')
+        token = None
 
-        if len(matchingAlbums) == 1:
-            existingRating = Ratings.objects.filter(Username=request.user.username, AlbumID=matchingAlbums[0]) # If a rating exists already, we should update it instead of adding a new entry
+        with urllib.request.urlopen(SPOTIFY_API_TOKEN_URL, data) as f:
+            resp = json.loads(f.read().decode('utf-8'))
+            token = resp['access_token'] # {"access_token":"BQBW","token_type":"Bearer","expires_in":3600}
 
+        if token:
+            req = urllib.request.Request(SPOTIFY_API_GETALBUM + str(albumID))
+            req.add_header('Authorization', 'Bearer ' + token)
+            req.add_header('Accept', 'application/json')
+            try:
+                album = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))
+            except:
+                return HttpResponse("Album not found.")
+            
+            existingRating = Ratings.objects.filter(Username=request.user.username, AlbumID=albumID)
             if len(existingRating) == 0:
-                newRating = Ratings(Username=request.user.username, AlbumID=matchingAlbums[0], Rating=received_data['rating']) # Create a new entry and add it to the DB
+                newRating = Ratings(Username=request.user.username, AlbumID=albumID, Rating=received_data['rating']) # Create a new entry and add it to the DB
                 newRating.save()
             else:
-                Ratings.objects.filter(Username=request.user.username, AlbumID=matchingAlbums[0]).update(Rating=received_data['rating']) # Update the existing entry in the DB
-
+                existingRating.update(Rating=received_data['rating']) # Update the existing entry in the DB
     return redirect('/album/' + albumID)
 
 def homeView(request):

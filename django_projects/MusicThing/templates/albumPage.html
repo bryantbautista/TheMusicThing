@@ -65,7 +65,7 @@
 <body>
     {% csrf_token %}
     <div class="album">
-        <img src="album-cover.jpg" alt="Album Cover">
+        <img src="{{ coverurl }}" alt="Album Cover">
         <div class="song-name">Song Name</div>
         <div class="rating" id="rating">
             <span class="star" data-rating="1"></span>
@@ -75,12 +75,13 @@
             <span class="star" data-rating="5"></span>
         </div>
         <div class="rating-display" id="rating-display">0/5 stars</div>
-        <div class="song-name">Artist: {{ album.ArtistID.Name }}</div>
-        <div class="song-name">Genre: {{ album.GenreID.Name }}</div>
-        <div class="song-name">Release Date: {{ album.ReleaseDate }}</div>
-        <div class="song-name">Album: {{ album.Name }}</div>
-        <div class="song-name">Duration: {{ album.LengthMins }} mins</div>
-        <div class="song-name">Average Rating: {{ album.Rating }}</div>
+        <div class="song-name">Artist: {{ artist }}</div>
+        <div class="song-name">Genres: {{ genres }}</div>
+        <div class="song-name">Release Date: {{ releasedate }}</div>
+        <div class="song-name">Album: {{ name }}</div>
+        <div class="song-name">Duration: {{ length }}</div>
+        <div class="song-name">Average Rating: {{ avgRating }}</div>
+        <a href="{{ albumlink }}">Spotify link</a>
     </div>
 
     <script>
@@ -104,7 +105,7 @@
                 userRating = parseInt(star.getAttribute('data-rating'));
                 updateRatingDisplay();
                 const csrftoken = getCookie('csrftoken');
-                fetch("/updateRating/{{ album.AlbumID }}", {
+                fetch("/updateRating/{{ albumID }}", {
                     method: "POST",
                     body: JSON.stringify({
                         rating: userRating
