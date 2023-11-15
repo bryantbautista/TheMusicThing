@@ -51,10 +51,29 @@ def registerView(request):
     return render(request, "registration/register.html", {"form": form})
 
 def albumView(request, albumID):
-    album = Albums.objects.filter(AlbumID = albumID)
-    if len(album) != 1:
-        return HttpResponse("Album not found.")
-    return render(request, "albumPage.html", {"album":album[0]})
+    SPOTIFY_API_TOKEN_URL = 'https://accounts.spotify.com/api/token'
+    SPOTIFY_API_CLIENT_ID = '9aae27d322434eebbfdde75b04a301e4'
+    SPOTIFY_API_CLIENT_SECRET = '1857c1bed7304fe49712638e2927111a'
+    SPOTIFY_API_GETALBUM = 'https://api.spotify.com/v1/albums/'
+    data = urllib.parse.urlencode({
+        'grant_type': 'client_credentials', 
+        'client_id': SPOTIFY_API_CLIENT_ID, 
+        'client_secret': SPOTIFY_API_CLIENT_SECRET})
+    data = data.encode('ascii')
+    token = None
+
+    with urllib.request.urlopen(SPOTIFY_API_TOKEN_URL, data) as f:
+        resp = json.loads(f.read().decode('utf-8'))
+        token = resp['access_token'] # {"access_token":"BQBW","token_type":"Bearer","expires_in":3600}
+
+    if token:
+        req = urllib.request.Request(SPOTIFY_API_GETALBUM + str(albumID))
+        req.add_header('Authorization', 'Bearer ' + token)
+        req.add_header('Accept', 'application/json')
+        releases = urllib.request.urlopen(req).read().decode('utf-8')
+        print(json.loads(releases)['images'])
+
+    return render(request, "albumPage.html")
 
 def updateRating(request, albumID):
     if request.user.is_authenticated is False: # If user isn't authenticated, they shouldn't be able to rate an album.
@@ -104,7 +123,6 @@ def homeView(request):
     releases = None
     artists = None
     if token:
-        request.session['spotifyrefresh'] = token
         req = urllib.request.Request(SPOTIFY_API_NEW_RELEASES)
         req.add_header('Authorization', 'Bearer ' + token)
         req.add_header('Accept', 'application/json')
