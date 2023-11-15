@@ -63,8 +63,9 @@
     </style>
 </head>
 <body>
+    {% csrf_token %}
     <div class="album">
-        <img src="album-cover.jpg" alt="Album Cover">
+        <img src="{{ coverurl }}" alt="Album Cover">
         <div class="song-name">Song Name</div>
         <div class="rating" id="rating">
             <span class="star" data-rating="1"></span>
@@ -74,19 +75,25 @@
             <span class="star" data-rating="5"></span>
         </div>
         <div class="rating-display" id="rating-display">0/5 stars</div>
-        <div class="song-name">Artist: </div>
-        <div class="song-name">Genre: </div>
-        <div class="song-name">Release Date: </div>
-        <div class="song-name">Album: </div>
-        <div class="song-name">Duration: </div>
-        <div class="song-name">Average Rating</div>
-        <div class="song-name">Song Name</div>
+        <div class="song-name">Artist: {{ artist }}</div>
+        <div class="song-name">Genres: {{ genres }}</div>
+        <div class="song-name">Release Date: {{ releasedate }}</div>
+        <div class="song-name">Album: {{ name }}</div>
+        <div class="song-name">Duration: {{ length }}</div>
+        <div class="song-name">Average Rating: {{ avgRating }}</div>
+        <a href="{{ albumlink }}">Spotify link</a>
     </div>
 
     <script>
         const stars = document.querySelectorAll('.star');
         const ratingDisplay = document.getElementById('rating-display');
         let userRating = 0;
+
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        } 
 
         stars.forEach(star => {
             star.addEventListener('mouseover', () => {
@@ -97,6 +104,17 @@
             star.addEventListener('click', () => {
                 userRating = parseInt(star.getAttribute('data-rating'));
                 updateRatingDisplay();
+                const csrftoken = getCookie('csrftoken');
+                fetch("/updateRating/{{ albumID }}", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        rating: userRating
+                    }),
+                    headers: {
+                        "Content-type": "application/json; charset=UTF-8",
+                        "X-CSRFToken": csrftoken
+                    }
+                });
             });
         });
 
