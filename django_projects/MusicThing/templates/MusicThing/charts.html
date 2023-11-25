@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="header-padding"></div>
+<div class="charts-container">
+    <div class="charts-box">
+        <table>
+            <colgroup>
+                <col style="width: auto">
+                <col style="width: 200px;">
+                <col style="width: auto;">
+                <col style="width: 200px;">
+                <col style="width: 150px;">
+            </colgroup>
+            <tr>
+                <th>Overall Rank</th>
+                <th>Album Cover</th>
+                <th>Album Info</th>
+                <th>Average Rating</th>
+                <th>Number of Ratings</th>
+            </tr>
+            <tr>
+                <td>
+                    <h1>1</h1>
+                </td>
+                <td>
+                    <img src="https://upload.wikimedia.org/wikipedia/en/5/51/Igor_-_Tyler%2C_the_Creator.jpg" width="150" height="150">
+                </td>
+                <td>
+                    <p><strong>Igor</strong></p>
+                    <p>By Tyler, The Creator</p>
+                </td>
+                <td>
+                    <p>4.01</p>
+                </td>
+                <td>
+                    <p>900000</p>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+{% endblock %}

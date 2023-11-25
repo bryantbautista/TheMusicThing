@@ -1,0 +1,36 @@
+.charts-container {
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center; */
+    align-items: center;
+    min-height: 80vh;
+    background-color: #f4f4f4;
+}
+
+.charts-box {
+    padding-left: 5rem;
+    padding-right: 5rem;
+    padding-top: 2rem;
+    padding-bottom: 2.5rem;
+    background: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin-top: 15px;
+}
+
+.charts-box table {
+    width: 100%;
+}
+
+.charts-box th, .charts-box td {
+    text-align: center;
+}
+
+.charts-box img {
+    display: block;
+    margin: 0 auto;
+}
+
+.header-padding {
+    margin-top: 89px;
+}
