@@ -168,3 +168,6 @@ def homeView(request):
         artists = urllib.request.urlopen(req).read().decode('utf-8')
 
     return render(request, "homePage.html", {"releases": releases, "artists": artists})
+
+def FAQ(request):
+    return render(request, "FAQ.html")
