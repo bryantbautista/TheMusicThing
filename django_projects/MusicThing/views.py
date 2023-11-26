@@ -169,5 +169,5 @@ def homeView(request):
 
     return render(request, "homePage.html", {"releases": releases, "artists": artists})
 
-def FAQ(request):
+def FAQView(request):
     return render(request, "FAQ.html")
