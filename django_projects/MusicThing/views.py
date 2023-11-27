@@ -171,8 +171,19 @@ def homeView(request):
     return render(request, "homePage.html", {"releases": releases, "artists": artists})
 
 def chartsView(request):
+    id_sum = {}
+    id_count = {}
 
-    # topAlbums = Ratings.objects.order_by("")[0:20].get()
+    for rating in Ratings.objects.all():
+        id_sum[rating.AlbumID] = id_sum.get(rating.AlbumID, 0) + rating.Rating
+        id_count[rating.AlbumID] = id_count.get(rating.AlbumID, 0) + 1
+
+    id_avg = {}
+
+    for id, sum in id_sum.items():
+        id_avg[id] = round(sum / id_count[id], 2)
+
+    print(id_avg.items())
     # token = getSpotifyToken()
     # if token:
     #     req = urllib.request.Request('https://api.spotify.com/v1/albums/' + str(albumID))
