@@ -55,6 +55,17 @@ body {
     text-align: center;
 }
 
+.description {
+    text-align: left;
+    margin: 0 auto;
+    max-width: 600px;
+}
+
+.description p {
+    margin-left: 20px;
+    text-align: left;
+}
+
 .content-container {
     display: flex;
     justify-content: right;

@@ -18,7 +18,7 @@
 <body>
     <!-- Header Section -->
     <header class="header">
-        <a href="#" class="logo">The Music Thing</a>
+        <a href="{% url 'home' %}" class="logo">The Music Thing</a>
 
         <nav class="navbar">
             <a href="#">Top</a>
@@ -39,7 +39,7 @@
         </div>
         <nav>
             <a href="#">INFO |</a>
-            <a href="#">FAQ |</a>
+            <a href="{% url 'FAQ' %}">FAQ |</a>
             <a href="#">Support Us/Feedback</a>
         </nav>
     </footer>
