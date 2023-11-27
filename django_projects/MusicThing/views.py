@@ -129,6 +129,7 @@ def updateRating(request, albumID):
                 existingRating.update(Rating=received_data['rating']) # Update the existing entry in the DB
     return redirect('/album/' + albumID)
 
+
 def homeView(request):
     # TODO: Move me to external file.
 
@@ -170,4 +171,15 @@ def homeView(request):
     return render(request, "homePage.html", {"releases": releases, "artists": artists})
 
 def chartsView(request):
+
+    # topAlbums = Ratings.objects.order_by("")[0:20].get()
+    # token = getSpotifyToken()
+    # if token:
+    #     req = urllib.request.Request('https://api.spotify.com/v1/albums/' + str(albumID))
+    #     req.add_header('Authorization', 'Bearer ' + token)
+    #     req.add_header('Accept', 'application/json')
+    #     try:
+    #         album = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))
+    #     except:
+    #         return HttpResponse("Album not found.")
     return render(request, "charts.html")

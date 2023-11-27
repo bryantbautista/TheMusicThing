@@ -3,41 +3,42 @@
 {% block content %}
 <div class="header-padding"></div>
 <div class="charts-container">
-    <div class="charts-box">
-        <table>
-            <colgroup>
-                <col style="width: auto">
-                <col style="width: 200px;">
-                <col style="width: auto;">
-                <col style="width: 200px;">
-                <col style="width: 150px;">
-            </colgroup>
-            <tr>
-                <th>Overall Rank</th>
-                <th>Album Cover</th>
-                <th>Album Info</th>
-                <th>Average Rating</th>
-                <th>Number of Ratings</th>
-            </tr>
-            <tr>
-                <td>
-                    <h1>1</h1>
-                </td>
-                <td>
-                    <img src="https://upload.wikimedia.org/wikipedia/en/5/51/Igor_-_Tyler%2C_the_Creator.jpg" width="150" height="150">
-                </td>
-                <td>
-                    <p><strong>Igor</strong></p>
-                    <p>By Tyler, The Creator</p>
-                </td>
-                <td>
-                    <p>4.01</p>
-                </td>
-                <td>
-                    <p>900000</p>
-                </td>
-            </tr>
-        </table>
+    <div class="charts-entry">
+        <div class="charts-data charts-text">
+            <h1 style="text-align: center;">1</h1>
+        </div>
+        <div class="charts-cover charts-data">
+            <img src="https://images.genius.com/607348d25e00338f23acfc74fd5821e8.1000x1000x1.jpg" width="150" height="150">
+        </div>
+        <div class="charts-info charts-data">
+            <p><b>Igor</b></p>
+            <p>By Tyler, the Creator</p>
+        </div>
+        <div class="charts-ratings charts-data">
+            <p>4.50</p>
+        </div>
+        <div class="charts-ratings charts-data">
+            <p>50,000,000</p>
+        </div>
+    </div>
+
+    <div class="charts-entry">
+        <div class="charts-data charts-text">
+            <h1 style="text-align: center;">2</h1>
+        </div>
+        <div class="charts-cover charts-data">
+            <img src="https://images.genius.com/607348d25e00338f23acfc74fd5821e8.1000x1000x1.jpg" width="150" height="150">
+        </div>
+        <div class="charts-info charts-data">
+            <p><b>Igor</b></p>
+            <p>By Tyler, the Creator</p>
+        </div>
+        <div class="charts-ratings charts-data">
+            <p>4.50</p>
+        </div>
+        <div class="charts-ratings charts-data">
+            <p>50,000,000</p>
+        </div>
     </div>
 </div>
 {% endblock %}

@@ -1,36 +1,46 @@
 .charts-container {
     display: flex;
     flex-direction: column;
-    /* justify-content: center; */
+    justify-content: center;
     align-items: center;
-    min-height: 80vh;
-    background-color: #f4f4f4;
+    background-color: #fff;
 }
 
-.charts-box {
-    padding-left: 5rem;
-    padding-right: 5rem;
-    padding-top: 2rem;
-    padding-bottom: 2.5rem;
+.charts-entry {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
     background: #fff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
-    margin-top: 15px;
+    padding: 10px;
+    min-width: 900px;
+    margin: 10px;
 }
 
-.charts-box table {
-    width: 100%;
+.charts-data {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0px 20px;
 }
 
-.charts-box th, .charts-box td {
-    text-align: center;
+.charts-text {
+    width: 100px;
 }
 
-.charts-box img {
-    display: block;
-    margin: 0 auto;
+.charts-cover {
+    width: 150px;
 }
 
+.charts-info {
+    width: 300px;
+}
+
+.charts-rating {
+    width: 100px;
+}
 .header-padding {
     margin-top: 89px;
 }
