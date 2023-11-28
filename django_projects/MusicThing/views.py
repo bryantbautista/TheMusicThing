@@ -183,7 +183,15 @@ def chartsView(request):
     for id, sum in id_sum.items():
         id_avg[id] = round(sum / id_count[id], 2)
 
-    print(id_avg.items())
+    id_avg_list = id_avg.items()
+
+    for i in range(0, 20):
+        maxAlbum = id_avg_list[0]
+        for id, avg in id_avg_list:
+            if avg > maxAlbum[1]:
+                maxAlbum = (id, avg)
+        
+
     # token = getSpotifyToken()
     # if token:
     #     req = urllib.request.Request('https://api.spotify.com/v1/albums/' + str(albumID))
