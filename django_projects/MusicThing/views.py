@@ -183,22 +183,30 @@ def chartsView(request):
     for id, sum in id_sum.items():
         id_avg[id] = round(sum / id_count[id], 2)
 
-    id_avg_list = id_avg.items()
+    topAlbums = []
 
-    for i in range(0, 20):
-        maxAlbum = id_avg_list[0]
-        for id, avg in id_avg_list:
-            if avg > maxAlbum[1]:
-                maxAlbum = (id, avg)
+    for topAlbum in range(0, 20):
+        if len(id_avg) > 0:
+            newmax = max(id_avg, key= lambda x: id_avg[x])
+            topAlbums.append(newmax)
+            id_avg.pop(newmax)
+
+
+    token = getSpotifyToken()
+    if token:
+        params = {
+            'ids': ','.join(topAlbums)
+        }
+
+
+        req = urllib.request.Request('https://api.spotify.com/v1/albums' + '?' + urllib.parse.urlencode(params))
+        req.add_header('Authorization', 'Bearer ' + token)
+        req.add_header('Accept', 'application/json')
+        try:
+            response = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))
+        except:
+            return HttpResponse("Album not found.")
         
-
-    # token = getSpotifyToken()
-    # if token:
-    #     req = urllib.request.Request('https://api.spotify.com/v1/albums/' + str(albumID))
-    #     req.add_header('Authorization', 'Bearer ' + token)
-    #     req.add_header('Accept', 'application/json')
-    #     try:
-    #         album = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))
-    #     except:
-    #         return HttpResponse("Album not found.")
+        for album in response['albums']:
+            print(album['name'])
     return render(request, "charts.html")
