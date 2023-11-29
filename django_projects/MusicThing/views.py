@@ -8,6 +8,7 @@ from MusicThing.models import Ratings
 import urllib.request
 import urllib.parse
 import json
+import random
 
 
 # Create your views here.
@@ -216,3 +217,7 @@ def chartsView(request):
                               'totalratings': id_count[response['albums'][i]['id']], 
                               'id': response['albums'][i]['id']})
     return render(request, "charts.html", {'albumInfo': albumInfo})
+
+def randomView(request):
+    randomRating = random.choice(Ratings.objects.all())
+    return redirect('/album/' + randomRating.AlbumID)

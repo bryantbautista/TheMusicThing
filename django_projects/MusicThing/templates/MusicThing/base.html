@@ -21,9 +21,14 @@
         <a href="/" class="logo">The Music Thing</a>
 
         <nav class="navbar">
-            <a href="#">Top</a>
-            <a href="#">Random</a>
-            <a href="#">Profile</a> ▾ <!-- Dropdown menu icon for Profile -->
+            <a href="/charts">Charts</a>
+            <a href="/random">Random</a>
+            {% if user.is_authenticated %}
+                <a href="/logout">Log Out</a>
+            {% else %}
+                <a href="/login">Login</a>
+                <a href="/register">Register</a>
+            {% endif %}
         </nav>
     </header>
     <main>
