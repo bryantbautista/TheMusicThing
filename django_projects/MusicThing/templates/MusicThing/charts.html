@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="header-padding"></div>
+<div class="charts-container">
+    <div class="charts-header">
+        <div class="charts-data charts-text">Rank</div>
+        <div class="charts-data charts-cover">Album Cover</div>
+        <div class="charts-info charts-data">Title/Artist</div>
+        <div class="charts-ratings charts-data">Avg. Rating</div>
+        <div class="charts-ratings charts-data"># of Ratings</div>
+    </div>
+    {% for album in albumInfo %}
+        <div class="charts-entry">
+            <div class="charts-data charts-text">
+                <h1 style="text-align: center;">{{ album.rank }}</h1>
+            </div>
+            <div class="charts-cover charts-data">
+                <img src="{{ album.img }}" width="150" height="150">
+            </div>
+            <div class="charts-info charts-data">
+                <p><b><a href="/album/{{ album.id }}">{{ album.title }}</a></b></p>
+                <p>By {{ album.artist }}</p>
+            </div>
+            <div class="charts-ratings charts-data">
+                <p>{{ album.avgrating }}</p>
+            </div>
+            <div class="charts-ratings charts-data">
+                <p>{{ album.totalratings }}</p>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

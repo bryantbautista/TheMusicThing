@@ -129,6 +129,7 @@ def updateRating(request, albumID):
                 existingRating.update(Rating=received_data['rating']) # Update the existing entry in the DB
     return redirect('/album/' + albumID)
 
+
 def homeView(request):
     # TODO: Move me to external file.
 
@@ -168,3 +169,50 @@ def homeView(request):
         artists = urllib.request.urlopen(req).read().decode('utf-8')
 
     return render(request, "homePage.html", {"releases": releases, "artists": artists})
+
+def chartsView(request):
+    id_sum = {}
+    id_count = {}
+
+    for rating in Ratings.objects.all():
+        id_sum[rating.AlbumID] = id_sum.get(rating.AlbumID, 0) + rating.Rating
+        id_count[rating.AlbumID] = id_count.get(rating.AlbumID, 0) + 1
+
+    id_avg = {}
+    id_avg2 = {}
+
+    for id, sum in id_sum.items():
+        id_avg[id] = round(sum / id_count[id], 2)
+        id_avg2[id] = round(sum / id_count[id], 2)
+
+    topAlbums = []
+
+    for topAlbum in range(0, 20):
+        if len(id_avg) > 0:
+            newmax = max(id_avg, key= lambda x: id_avg[x])
+            topAlbums.append(newmax)
+            id_avg.pop(newmax)
+
+
+    token = getSpotifyToken()
+    if token:
+        params = {
+            'ids': ','.join(topAlbums)
+        }
+        req = urllib.request.Request('https://api.spotify.com/v1/albums' + '?' + urllib.parse.urlencode(params))
+        req.add_header('Authorization', 'Bearer ' + token)
+        req.add_header('Accept', 'application/json')
+        try:
+            response = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))
+        except:
+            return HttpResponse("Error: Album not found.")
+        
+        albumInfo = []
+        for i in range(0, len(response['albums'])):
+            albumInfo.append({'rank': i+1, 'img': response['albums'][i]['images'][0]['url'], 
+                              'title': response['albums'][i]['name'], 
+                              'artist': response['albums'][i]['artists'][0]['name'], 
+                              'avgrating': id_avg2[response['albums'][i]['id']], 
+                              'totalratings': id_count[response['albums'][i]['id']], 
+                              'id': response['albums'][i]['id']})
+    return render(request, "charts.html", {'albumInfo': albumInfo})
