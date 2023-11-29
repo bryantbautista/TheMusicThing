@@ -12,5 +12,6 @@ urlpatterns = [
     path("register", views.registerView, name="register"),
     path("album/<slug:albumID>", views.albumView, name="album"),
     path("updateRating/<slug:albumID>", views.updateRating, name="updateRating"),
-    path("charts", views.chartsView, name="charts")
+    path("charts", views.chartsView, name="charts"),
+    path("random", views.randomView, name="random")
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
