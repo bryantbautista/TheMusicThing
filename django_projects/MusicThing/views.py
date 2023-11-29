@@ -208,11 +208,11 @@ def chartsView(request):
             return HttpResponse("Error: Album not found.")
         
         albumInfo = []
-        print(id_count[response['albums'][0]['id']])
         for i in range(0, len(response['albums'])):
             albumInfo.append({'rank': i+1, 'img': response['albums'][i]['images'][0]['url'], 
                               'title': response['albums'][i]['name'], 
                               'artist': response['albums'][i]['artists'][0]['name'], 
                               'avgrating': id_avg2[response['albums'][i]['id']], 
-                              'totalratings': id_count[response['albums'][i]['id']]})
+                              'totalratings': id_count[response['albums'][i]['id']], 
+                              'id': response['albums'][i]['id']})
     return render(request, "charts.html", {'albumInfo': albumInfo})
