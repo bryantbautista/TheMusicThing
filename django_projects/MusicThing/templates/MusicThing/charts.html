@@ -3,42 +3,32 @@
 {% block content %}
 <div class="header-padding"></div>
 <div class="charts-container">
-    <div class="charts-entry">
-        <div class="charts-data charts-text">
-            <h1 style="text-align: center;">1</h1>
-        </div>
-        <div class="charts-cover charts-data">
-            <img src="https://images.genius.com/607348d25e00338f23acfc74fd5821e8.1000x1000x1.jpg" width="150" height="150">
-        </div>
-        <div class="charts-info charts-data">
-            <p><b>Igor</b></p>
-            <p>By Tyler, the Creator</p>
-        </div>
-        <div class="charts-ratings charts-data">
-            <p>4.50</p>
-        </div>
-        <div class="charts-ratings charts-data">
-            <p>50,000,000</p>
-        </div>
+    <div class="charts-header">
+        <div class="charts-data charts-text">Rank</div>
+        <div class="charts-data charts-cover">Album Cover</div>
+        <div class="charts-info charts-data">Title/Artist</div>
+        <div class="charts-ratings charts-data">Avg. Rating</div>
+        <div class="charts-ratings charts-data"># of Ratings</div>
     </div>
-
-    <div class="charts-entry">
-        <div class="charts-data charts-text">
-            <h1 style="text-align: center;">2</h1>
+    {% for album in albumInfo %}
+        <div class="charts-entry">
+            <div class="charts-data charts-text">
+                <h1 style="text-align: center;">{{ album.rank }}</h1>
+            </div>
+            <div class="charts-cover charts-data">
+                <img src="{{ album.img }}" width="150" height="150">
+            </div>
+            <div class="charts-info charts-data">
+                <p><b>{{ album.title }}</b></p>
+                <p>By {{ album.artist }}</p>
+            </div>
+            <div class="charts-ratings charts-data">
+                <p>{{ album.avgrating }}</p>
+            </div>
+            <div class="charts-ratings charts-data">
+                <p>{{ album.totalratings }}</p>
+            </div>
         </div>
-        <div class="charts-cover charts-data">
-            <img src="https://images.genius.com/607348d25e00338f23acfc74fd5821e8.1000x1000x1.jpg" width="150" height="150">
-        </div>
-        <div class="charts-info charts-data">
-            <p><b>Igor</b></p>
-            <p>By Tyler, the Creator</p>
-        </div>
-        <div class="charts-ratings charts-data">
-            <p>4.50</p>
-        </div>
-        <div class="charts-ratings charts-data">
-            <p>50,000,000</p>
-        </div>
-    </div>
+    {% endfor %}
 </div>
 {% endblock %}
