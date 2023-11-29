@@ -171,3 +171,17 @@ def homeView(request):
 
 def FAQView(request):
     return render(request, "FAQ.html")
+
+def supportView(request):
+    return render(request, "support.html")
+
+def feedback_submission(request):
+    if request.method == 'POST':
+        feedback = request.POST.get('feedback')
+        
+        # optional: save feedback to database
+        # print to console
+        print("Feedback received: ", feedback)
+        messages.success(request, 'Thank you for the feedback!')
+        
+        return redirect('support')

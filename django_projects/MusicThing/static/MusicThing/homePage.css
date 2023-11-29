@@ -61,7 +61,7 @@ body {
     max-width: 600px;
 }
 
-.description p {
+.description li {
     margin-left: 20px;
     text-align: left;
 }
