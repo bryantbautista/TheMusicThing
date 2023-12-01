@@ -179,6 +179,12 @@ def feedback_submission(request):
     if request.method == 'POST':
         feedback_content = request.POST.get('feedback')
         
+        # Check if the feedback content is empty
+        if not feedback_content.strip():
+            # Feedback is empty, set an error message
+            messages.error(request, 'Feedback box is empty! Please try again')
+            return redirect('support')
+        
         # Save feedback to database
         feedback = Feedback(content=feedback_content)
         feedback.save()
