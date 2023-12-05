@@ -101,6 +101,7 @@ def albumView(request, albumID):
             for rating in allRatings:
                 avgRating += rating.Rating
             avgRating /= len(allRatings)
+            avgRating = round(avgRating, 2)
         return render(request, "albumPage.html", {'albumID':albumID, 'artist':artist, 'genres':genres, 'albumlink': album['external_urls']['spotify'],
                                                   'releasedate':releasedate, 'name':name, 'coverurl':album['images'][0]['url'], 'length':length, 'avgRating':avgRating})
     return HttpResponse("Connection to spotify failed.")
