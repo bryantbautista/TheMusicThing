@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% for album in albums %}
+        <h1>{{ album.name }}</h1>
+        <a href="{{ album.external_urls.spotify }}">Spotify Link</a>
+        <br>
+    {% endfor %}
+{% endblock %}
