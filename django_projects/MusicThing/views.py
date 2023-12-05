@@ -221,3 +221,6 @@ def chartsView(request):
 def randomView(request):
     randomRating = random.choice(Ratings.objects.all())
     return redirect('/album/' + randomRating.AlbumID)
+
+def profileView(request):
+    return render(request, 'profile.html')
