@@ -6,14 +6,15 @@ from django.conf.urls.static import static
 from . import views
 
 urlpatterns = [
-    path("", views.index, name="index"),
+    path("", views.homeView, name="home"),
     path("logout", views.logoutView, name="logout"),
     path("login", views.loginView, name="login"),
     path("register", views.registerView, name="register"),
-    path("home", views.homeView, name="home"),
     path("album/<slug:albumID>", views.albumView, name="album"),
     path("updateRating/<slug:albumID>", views.updateRating, name="updateRating"),
     path("FAQ/", views.FAQView, name="FAQ"),
     path("support", views.supportView, name="support"),
-    path("feedback_submission/", views.feedback_submission, name="feedback_submission")
+    path("feedback_submission/", views.feedback_submission, name="feedback_submission"),
+    path("charts", views.chartsView, name="charts"),
+    path("random", views.randomView, name="random")
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

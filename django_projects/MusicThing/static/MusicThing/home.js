@@ -8,8 +8,13 @@ const renderTopSongs = (data) => {
         img.src = item.track.album.images[0].url;
         img.width = 100;
         img.alt = '';
-        card.appendChild(document.createElement('h4')).textContent =
-            item.track.name + ' by ' + item.track.artists[0].name;
+        // card.appendChild(document.createElement('h4')).textContent =
+        //     item.track.name + ' by ' + item.track.artists[0].name;
+        card.appendChild(document.createElement('br'));
+        const a = card.appendChild(document.createElement('a'));
+        a.appendChild(document.createTextNode(item.track.name + ' by ' + item.track.artists[0].name));
+        a.title = "uhhh";
+        a.href = "/album/" + item.track.album.id;
         card.appendChild(document.createElement('p')).textContent =
             'Release Date: ' + item.track.album.release_date;
         card.appendChild(document.createElement('p')).textContent =
@@ -27,8 +32,13 @@ const renderNewReleases = (data) => {
         img.src = release.images[0].url;
         img.width = 100;
         img.alt = '';
-        card.appendChild(document.createElement('h4')).textContent =
-            release.name + ' by ' + release.artists[0].name;
+        // card.appendChild(document.createElement('h4')).textContent =
+        //     release.name + ' by ' + release.artists[0].name;
+        card.appendChild(document.createElement('br'));
+        const a = card.appendChild(document.createElement('a'));
+        a.appendChild(document.createTextNode(release.name + ' by ' + release.artists[0].name));
+        a.title = "uhhh";
+        a.href = "/album/" + release.id;
         card.appendChild(document.createElement('p')).textContent =
             'Release Date: ' + release.release_date;
         card.appendChild(document.createElement('p')).textContent =

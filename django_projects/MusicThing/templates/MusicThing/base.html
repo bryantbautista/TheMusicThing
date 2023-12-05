@@ -13,18 +13,24 @@
     <link rel="stylesheet" href="{% static 'MusicThing/register.css' %}">
     <link rel="stylesheet" href="{% static 'MusicThing/FAQ.css' %}">
     <link rel="stylesheet" href="{% static 'MusicThing/support.css' %}">
+    <link rel="stylesheet" href="{% static 'MusicThing/charts.css' %}">
     <title>The Music Thing</title>
 </head>
 
 <body>
     <!-- Header Section -->
     <header class="header">
-        <a href="{% url 'home' %}" class="logo">The Music Thing</a>
+        <a href="/" class="logo">The Music Thing</a>
 
         <nav class="navbar">
-            <a href="#">Top</a>
-            <a href="#">Random</a>
-            <a href="#">Profile</a> ▾ <!-- Dropdown menu icon for Profile -->
+            <a href="/charts">Charts</a>
+            <a href="/random">Random</a>
+            {% if user.is_authenticated %}
+                <a href="/logout">Log Out</a>
+            {% else %}
+                <a href="/login">Login</a>
+                <a href="/register">Register</a>
+            {% endif %}
         </nav>
     </header>
     <main>
@@ -33,7 +39,7 @@
     </main>
     <!-- Footer Section -->
     <footer>
-        <img src="#" alt="(MusicThing Logo)" width="100"> <!-- Logo Placeholder -->
+        <img src="" alt="(MusicThing Logo)" width="100"> <!-- Logo Placeholder -->
         <p>&copy;2023 SJSU, Inc</p>
         <div class="socials">
             <!-- Social Media Icons or Links Placeholder -->

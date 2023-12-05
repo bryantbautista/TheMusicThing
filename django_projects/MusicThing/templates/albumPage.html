@@ -7,10 +7,10 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            background-image: url('https://images.unsplash.com/photo-1525362081669-2b476bb628c3?auto=format&fit=crop&q=60&w=700&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxleHBsb3JlLWZlZWR8MTh8fHxlbnwwfHx8fHw%3D'); /* Replace 'your-image-url.jpg' with the actual URL or path to your image */
+            background-image: url('https://images.unsplash.com/photo-1525362081669-2b476bb628c3?auto=format&fit=crop&q=60&w=700&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxleHBsb3JlLWZlZWR8MTh8fHxlbnwwfHx8fHw%3D');
             background-size: auto;
             background-repeat: repeat; 
-}
+        }
         .album {
             width: 300px;
             margin: 0 auto;
@@ -31,7 +31,7 @@
         /* Styling for the star rating */
         .rating {
             unicode-bidi: bidi-override;
-            direction: ltr; /* Change the direction to left-to-right */
+            direction: ltr;
             position: relative;
         }
         .rating > span {
@@ -41,7 +41,7 @@
             cursor: pointer;
             font-size: 20px;
             margin-right: 5px;
-            color: #ffcc00; /* Yellow color for stars */
+            color: #ffcc00;
         }
         .rating > span:hover:before {
             content: "\2605";
@@ -56,9 +56,47 @@
             position: absolute;
         }
         .rating-display {
-            margin-top: 20px; /* Increased margin-top for spacing */
+            margin-top: 20px;
             font-weight: bold;
             font-size: 18px;
+        }
+        .comments-section {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #0d53e9;
+            border-radius: 5px;
+            background-color: #f4f8f8;
+            box-shadow: 0 0 10px rgba(220, 21, 21, 0.1);
+            width: 50%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .comment {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f2f3f5;
+        }
+
+        .comment .username {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .comment .timestamp {
+            color: #555;
+            font-size: 12px;
+        }
+
+        #comments-list {
+            margin-bottom: 10px;
+        }
+
+        #comment-input {
+            width: 50%;
+            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -84,9 +122,17 @@
         <a href="{{ albumlink }}">Spotify link</a>
     </div>
 
+    <div class="comments-section">
+        <h2>Listeners Comments</h2>
+        <div id="comments-list"></div>
+        <textarea id="comment-input" placeholder="Add your comment"></textarea>
+        <button onclick="addComment()">Add Comment</button>
+    </div>
+
     <script>
         const stars = document.querySelectorAll('.star');
         const ratingDisplay = document.getElementById('rating-display');
+        const commentsList = document.getElementById('comments-list');
         let userRating = 0;
 
         function getCookie(name) {
@@ -104,6 +150,7 @@
             star.addEventListener('click', () => {
                 userRating = parseInt(star.getAttribute('data-rating'));
                 updateRatingDisplay();
+                showCommentPrompt();
                 const csrftoken = getCookie('csrftoken');
                 fetch("/updateRating/{{ albumID }}", {
                     method: "POST",
@@ -126,7 +173,58 @@
         }
 
         function updateRatingDisplay() {
-            ratingDisplay.textContent = userRating + '/5 stars';
+            ratingDisplay.textContent = `You rated this album ${userRating}/5 stars.`;
+        }
+
+        function showCommentPrompt() {
+            document.getElementById('comment-input').style.display = 'block';
+            document.getElementById('comment-input').focus();
+        }
+
+        function addComment() {
+            const commentInput = document.getElementById('comment-input');
+            const commentsList = document.getElementById('comments-list');
+            const commentText = commentInput.value.trim();
+
+            if (commentText !== '') {
+                const commentElement = document.createElement('div');
+                commentElement.classList.add('comment');
+
+                // Simulate username, timestamp, and rating (replace with actual values)
+                const username = "Guest";
+                const timestamp = getCurrentTimestamp();
+
+                const usernameElement = document.createElement('div');
+                usernameElement.classList.add('username');
+                usernameElement.textContent = username;
+
+                const timestampElement = document.createElement('div');
+                timestampElement.classList.add('timestamp');
+                timestampElement.textContent = timestamp;
+
+                const ratingElement = document.createElement('div');
+                ratingElement.classList.add('rating');
+                ratingElement.textContent = `Rating: ${userRating}/5 stars`;
+
+                const commentTextElement = document.createElement('div');
+                commentTextElement.textContent = commentText;
+
+                commentElement.appendChild(usernameElement);
+                commentElement.appendChild(timestampElement);
+                commentElement.appendChild(ratingElement);
+                commentElement.appendChild(commentTextElement);
+
+                commentsList.appendChild(commentElement);
+
+                // Clear the comment input
+                commentInput.value = '';
+            }
+        }
+
+        function getCurrentTimestamp() {
+            const now = new Date();
+            const options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' };
+            return now.toLocaleDateString('en-US', options);
         }
     </script>
 </body>
