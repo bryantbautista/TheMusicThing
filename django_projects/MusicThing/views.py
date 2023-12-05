@@ -4,7 +4,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponse
 from .forms import LoginForm, RegistrationForm
-from MusicThing.models import Ratings
+from MusicThing.models import Ratings, Feedback
 import urllib.request
 import urllib.parse
 import json
@@ -170,6 +170,30 @@ def homeView(request):
         artists = urllib.request.urlopen(req).read().decode('utf-8')
 
     return render(request, "homePage.html", {"releases": releases, "artists": artists})
+
+def FAQView(request):
+    return render(request, "FAQ.html")
+
+def supportView(request):
+    return render(request, "support.html")
+
+def feedback_submission(request):
+    if request.method == 'POST':
+        feedback_content = request.POST.get('feedback')
+        
+        # Check if the feedback content is empty
+        if not feedback_content.strip():
+            # Feedback is empty, set an error message
+            messages.error(request, 'Feedback box is empty! Please try again')
+            return redirect('support')
+        
+        # Save feedback to database
+        feedback = Feedback(content=feedback_content)
+        feedback.save()
+        
+        messages.success(request, 'Thank you for the feedback!')
+        
+        return redirect('support')
 
 def chartsView(request):
     id_sum = {}

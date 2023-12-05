@@ -51,6 +51,13 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+from django.contrib.messages import constants as messages
+MESSAGE_TAGS = {
+    messages.SUCCESS: 'alert-success',
+    messages.ERROR: 'alert-error'
+    # You can add more tags for different message levels if needed
+}
+
 ROOT_URLCONF = 'mysite.urls'
 
 TEMPLATES = [

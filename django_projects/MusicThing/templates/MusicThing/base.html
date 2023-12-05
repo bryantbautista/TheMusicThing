@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="{% static 'MusicThing/homePage.css' %}">
     <link rel="stylesheet" href="{% static 'MusicThing/login.css' %}">
     <link rel="stylesheet" href="{% static 'MusicThing/register.css' %}">
+    <link rel="stylesheet" href="{% static 'MusicThing/FAQ.css' %}">
+    <link rel="stylesheet" href="{% static 'MusicThing/support.css' %}">
     <link rel="stylesheet" href="{% static 'MusicThing/charts.css' %}">
     <title>The Music Thing</title>
 </head>
@@ -44,8 +46,8 @@
         </div>
         <nav>
             <a href="#">INFO |</a>
-            <a href="#">FAQ |</a>
-            <a href="#">Support Us/Feedback</a>
+            <a href="{% url 'FAQ' %}">FAQ |</a>
+            <a href="{% url 'support' %}">Support Us/Feedback</a>
         </nav>
     </footer>
 </body>

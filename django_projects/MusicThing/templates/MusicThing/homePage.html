@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://kit.fontawesome.com/92d70a2fd8.js" crossorigin="anonymous"></script>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'MusicThing/homePage.css' %}" >
+    <link rel="stylesheet" href="{% static 'MusicThing/homePage.css' %}">
     <title>The Music Thing</title>
 </head>
 
@@ -37,8 +37,17 @@
             <i class="fa-solid fa-magnifying-glass"></i>
         </div>
         <h2>About The Music Thing™</h2>
-        <p>* Description goes here... *</p>
+        <p>Welcome to The Music Thing!</p>
+        <p>Our platform is uniquely designed to connect people from all corners of the world through the universal
+            language of music. Whether you're an enthusiast of classical tunes, a fan of hard-hitting rock, or someone
+            who loves to explore the latest hip-hop beats, we've got something for everyone.
+        </p>
 
+        <div class="description">
+            <li>Discover and share a variety of songs and albums spanning diverse genres and eras</li>
+            <li>Rate and write reviews to share your opinions</li>
+            <li>Connect and grow your love for music with other fellow music enthusiasts</li>
+        </div>
         <hr>
     </div>
 
@@ -95,8 +104,8 @@
         </div>
         <nav>
             <a href="#">INFO |</a>
-            <a href="#">FAQ |</a>
-            <a href="#">Support Us/Feedback</a>
+            <a href="{% url 'FAQ' %}">FAQ |</a>
+            <a href="{% url 'support' %}">Support Us/Feedback</a>
         </nav>
     </footer>
 
