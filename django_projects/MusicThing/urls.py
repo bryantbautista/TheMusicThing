@@ -16,5 +16,6 @@ urlpatterns = [
     path("support", views.supportView, name="support"),
     path("feedback_submission/", views.feedback_submission, name="feedback_submission"),
     path("charts", views.chartsView, name="charts"),
-    path("random", views.randomView, name="random")
+    path("random", views.randomView, name="random"),
+    path("profile", views.profileView, name="profile")
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
