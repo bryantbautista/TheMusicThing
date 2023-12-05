@@ -56,6 +56,21 @@ body {
     text-align: center;
 }
 
+.section-top p{
+    padding: 0 300px;
+}
+
+.description {
+    text-align: left;
+    margin: 0 auto;
+    max-width: 600px;
+}
+
+.description li {
+    margin-left: 20px;
+    text-align: left;
+}
+
 .content-container {
     display: flex;
     justify-content: right;

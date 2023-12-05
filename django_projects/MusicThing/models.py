@@ -32,3 +32,9 @@ class Ratings(models.Model):
     def __str__(self):
         return self.Username + ": " + str(self.Rating)
 
+class Feedback(models.Model):
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Feedback received on {self.created_at}"

@@ -1,0 +1,44 @@
+{% extends "base.html" %} 
+
+{% block content %}
+<div class="header-padding"></div>
+
+<!-- Display Messages -->
+{% if messages %}
+<div class="messages">
+    {% for message in messages %}
+    <div class="{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- Support Us/Feedback Section -->
+<section class="support-section">
+  <h1>Support Us / Feedback</h1>
+
+  <!-- Support Options -->
+  <div class="support-options">
+    <h2>How You Can Support Us</h2>
+    <p>If you love our service and want to support us, here are some ways you can help</p>
+    <ul>
+      <p>• Follow us on social media</p>
+      <p>• Spread the word about our website with others</p>
+      <p>• Leave us feedback and share your thoughts of The Music Thing below!</p>
+    </ul>
+  </div>
+
+  <!-- Feedback Form -->
+  <div class="feedback-form">
+    <h2>Your Feedback</h2>
+    <form action="{% url 'feedback_submission' %}" method="post">
+      {% csrf_token %}
+      <textarea
+        name="feedback"
+        rows="4"
+        placeholder="Share your thoughts with us..."
+      ></textarea>
+      <button type="submit">Send Feedback</button>
+    </form>
+  </div>
+</section>
+{% endblock %}
