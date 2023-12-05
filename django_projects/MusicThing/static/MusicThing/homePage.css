@@ -55,6 +55,10 @@ body {
     text-align: center;
 }
 
+.section-top p{
+    padding: 0 300px;
+}
+
 .description {
     text-align: left;
     margin: 0 auto;
