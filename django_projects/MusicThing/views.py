@@ -275,4 +275,4 @@ def searchView(request):
             else:
                 album['avgRating'] = round(totalRating / len(curRatings), 2)
             album['numRatings'] = len(curRatings)
-    return render(request, "search.html", {'albums': response['albums']['items']})
+    return render(request, "search.html", {'albums': response['albums']['items'], 'query':query})
