@@ -135,14 +135,18 @@
     <div class="album">
         <img src="{{ coverurl }}" alt="Album Cover">
         <div class="song-name">Song Name</div>
-        <div class="rating" id="rating">
-            <span class="star" data-rating="1"></span>
-            <span class="star" data-rating="2"></span>
-            <span class="star" data-rating="3"></span>
-            <span class="star" data-rating="4"></span>
-            <span class="star" data-rating="5"></span>
-        </div>
-        <div class="rating-display" id="rating-display">0/5 stars</div>
+        {% if user.is_authenticated %}
+            <div class="rating" id="rating">
+                <span class="star" data-rating="1"></span>
+                <span class="star" data-rating="2"></span>
+                <span class="star" data-rating="3"></span>
+                <span class="star" data-rating="4"></span>
+                <span class="star" data-rating="5"></span>
+            </div>
+            <div class="rating-display" id="rating-display">0/5 stars</div>
+        {% else %}
+            <a href="/login">Log in</a> or <a href="/register">register</a> to rate
+        {% endif %}
         <div class="song-name">Artist: {{ artist }}</div>
         <div class="song-name">Genres: {{ genres }}</div>
         <div class="song-name">Release Date: {{ releasedate }}</div>
@@ -221,7 +225,11 @@
                 commentElement.classList.add('comment');
 
                 // Simulate username, timestamp, and rating (replace with actual values)
-                const username = "Guest";
+                {% if user.is_authenticated %}
+                const username = "{{ user.username }}";
+                {% else %}
+                const username = "Guest"
+                {% endif %}
                 const timestamp = getCurrentTimestamp();
 
                 const usernameElement = document.createElement('div');
@@ -231,17 +239,20 @@
                 const timestampElement = document.createElement('div');
                 timestampElement.classList.add('timestamp');
                 timestampElement.textContent = timestamp;
-
+                {% if user.is_authenticated %}
                 const ratingElement = document.createElement('div');
                 ratingElement.classList.add('rating');
                 ratingElement.textContent = `Rating: ${userRating}/5 stars`;
+                {% endif %}
 
                 const commentTextElement = document.createElement('div');
                 commentTextElement.textContent = commentText;
 
                 commentElement.appendChild(usernameElement);
                 commentElement.appendChild(timestampElement);
+                {% if user.is_authenticated %}
                 commentElement.appendChild(ratingElement);
+                {% endif %}
                 commentElement.appendChild(commentTextElement);
 
                 commentsList.appendChild(commentElement);
