@@ -249,3 +249,30 @@ def randomView(request):
 
 def profileView(request):
     return render(request, 'profile.html')
+
+def searchView(request):
+    token = getSpotifyToken()
+    query = request.GET['q']
+    if token:
+        params = {
+            'q': query,
+            'type': 'album'
+        }
+        req = urllib.request.Request('https://api.spotify.com/v1/search' + '?' + urllib.parse.urlencode(params))
+        req.add_header('Authorization', 'Bearer ' + token)
+        req.add_header('Accept', 'application/json')
+        try:
+            response = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))
+        except:
+            return HttpResponse("Error")
+        for album in response['albums']['items']:
+            curRatings = Ratings.objects.filter(AlbumID=album['id'])
+            totalRating = 0
+            for rating in curRatings:
+                totalRating += rating.Rating
+            if len(curRatings) == 0:
+                album['avgRating'] = "n/a"
+            else:
+                album['avgRating'] = round(totalRating / len(curRatings), 2)
+            album['numRatings'] = len(curRatings)
+    return render(request, "search.html", {'albums': response['albums']['items'], 'query':query})

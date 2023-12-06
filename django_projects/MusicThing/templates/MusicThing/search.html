@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="header-padding"></div>
+<div class="search-container">
+    <div class="search-header">
+        <div class="search-bar">
+            <form method="GET" action="/search">
+                <input type="text" name="q" placeholder="Search" value="{{ query }}" style="line-height: 50px;">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </form>
+        </div>
+    </div>
+    <div class="search-header">
+        <div class="search-data search-cover">Album Cover</div>
+        <div class="search-info search-data">Title/Artist</div>
+        <div class="search-ratings search-data">Avg. Rating</div>
+        <div class="search-ratings search-data"># of Ratings</div>
+    </div>
+    {% for album in albums %}
+        <div class="search-entry">
+            <div class="search-cover search-data">
+                <img src="{{ album.images.0.url }}" width="150" height="150">
+            </div>
+            <div class="search-info search-data">
+                <p><b><a href="/album/{{ album.id }}">{{ album.name }}</a></b></p>
+                <p>By {{ album.artists.0.name }}</p>
+            </div>
+            <div class="search-ratings search-data">
+                <p>{{ album.avgRating }}</p>
+            </div>
+            <div class="search-ratings search-data">
+                <p>{{ album.numRatings }}</p>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
