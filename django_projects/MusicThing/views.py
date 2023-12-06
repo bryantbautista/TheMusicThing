@@ -265,4 +265,14 @@ def searchView(request):
             response = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))
         except:
             return HttpResponse("Error")
+        for album in response['albums']['items']:
+            curRatings = Ratings.objects.filter(AlbumID=album['id'])
+            totalRating = 0
+            for rating in curRatings:
+                totalRating += rating.Rating
+            if len(curRatings) == 0:
+                album['avgRating'] = "n/a"
+            else:
+                album['avgRating'] = round(totalRating / len(curRatings), 2)
+            album['numRatings'] = len(curRatings)
     return render(request, "search.html", {'albums': response['albums']['items']})
