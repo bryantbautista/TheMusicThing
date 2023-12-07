@@ -12,6 +12,7 @@ urlpatterns = [
     path("register", views.registerView, name="register"),
     path("album/<slug:albumID>", views.albumView, name="album"),
     path("updateRating/<slug:albumID>", views.updateRating, name="updateRating"),
+    path("postComment/<slug:albumID>", views.postComment, name="postComment"),
     path("FAQ/", views.FAQView, name="FAQ"),
     path("support", views.supportView, name="support"),
     path("feedback_submission/", views.feedback_submission, name="feedback_submission"),
