@@ -38,3 +38,13 @@ class Feedback(models.Model):
 
     def __str__(self):
         return f"Feedback received on {self.created_at}"
+
+class Comment(models.Model):
+    CommentID = models.AutoField(primary_key=True)
+    AlbumID = models.CharField(max_length=22)
+    Username = models.CharField(max_length=30)
+    Text = models.TextField()
+    Timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.Username + ": " + self.Text

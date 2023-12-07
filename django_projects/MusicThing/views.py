@@ -4,7 +4,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponse
 from .forms import LoginForm, RegistrationForm
-from MusicThing.models import Ratings, Feedback
+from MusicThing.models import Ratings, Feedback, Comment
 import urllib.request
 import urllib.parse
 import json
@@ -77,34 +77,30 @@ def albumView(request, albumID):
         except:
             return HttpResponse("Album not found.")
         artist = album['artists'][0]['name']
-        genres = ""
-        for genre in album['genres']:
-            genres += genre
+        genres = ", ".join([genre for genre in album['genres']])
         releasedate = album['release_date']
         name = album['name']
-        lengthseconds = 0
-        for track in album['tracks']['items']:
-            lengthseconds += track['duration_ms']
-        lengthseconds /= 1000
-        hours = int(lengthseconds // 3600)
-        minutes = int((lengthseconds % 3600) // 60)
-        seconds = int(lengthseconds % 60)
-        if hours != 0:
-            length = "" + str(hours) + " Hours, " + str(minutes) + " Minutes, " + str(seconds) + " Seconds"
-        else:
-            length = "" + str(minutes) + " Minutes, " + str(seconds) + " Seconds"
+        lengthseconds = sum(track['duration_ms'] for track in album['tracks']['items']) / 1000
+        hours, remainder = divmod(lengthseconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+        length = "{:02}:{:02}:{:02}".format(int(hours), int(minutes), int(seconds))
+        
         allRatings = Ratings.objects.filter(AlbumID=albumID)
-        if len(allRatings) == 0:
-            avgRating = "No ratings"
-        else:
-            avgRating = 0
-            for rating in allRatings:
-                avgRating += rating.Rating
-            avgRating /= len(allRatings)
-            avgRating = round(avgRating, 2)
+        avgRating = round(sum(rating.Rating for rating in allRatings) / len(allRatings), 2) if allRatings else "No ratings"
+
+        comments = Comment.objects.filter(AlbumID=albumID).order_by('-Timestamp')
+        
         return render(request, "albumPage.html", {'albumID':albumID, 'artist':artist, 'genres':genres, 'albumlink': album['external_urls']['spotify'],
-                                                  'releasedate':releasedate, 'name':name, 'coverurl':album['images'][0]['url'], 'length':length, 'avgRating':avgRating})
+                                                  'releasedate':releasedate, 'name':name, 'coverurl':album['images'][0]['url'], 'length':length, 'avgRating':avgRating, 'comments':comments})
     return HttpResponse("Connection to spotify failed.")
+
+def postComment(request, albumID):
+    if request.method == "POST" and request.user.is_authenticated:
+        comment_text = request.POST.get('comment', '')
+        if comment_text:
+            new_comment = Comment(AlbumID=albumID, Username=request.user.username, Text=comment_text)
+            new_comment.save()
+    return redirect('/album/' + albumID)
 
 def updateRating(request, albumID):
     if request.user.is_authenticated is False: # If user isn't authenticated, they shouldn't be able to rate an album.

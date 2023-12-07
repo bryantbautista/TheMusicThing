@@ -158,9 +158,22 @@
 
     <div class="comments-section">
         <h2>Listeners Comments</h2>
-        <div id="comments-list"></div>
-        <textarea id="comment-input" placeholder="Add your comment"></textarea>
-        <button onclick="addComment()">Add Comment</button>
+        <form action="/postComment/{{ albumID }}" method="post">
+            {% csrf_token %}
+            <textarea name="comment" id="comment-input" placeholder="Add your comment"></textarea>
+            <button type="submit">Add Comment</button>
+        </form>
+        <div id="comments-list">
+            {% for comment in comments %}
+            <div class="comment">
+                <div class="username">{{ comment.Username }}</div>
+                <div class="timestamp">{{ comment.Timestamp|date:"Y-m-d H:i" }}</div>
+                <div>{{ comment.Text }}</div>
+            </div>
+            {% empty %}
+            <p>No comments yet.</p>
+            {% endfor %}
+        </div>
     </div>
 
     <script>
