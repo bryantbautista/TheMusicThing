@@ -86,6 +86,12 @@
                     </div>
                 </div>
             {% endfor %}
+            {% if page != 2 %}
+                <a href="/profile/{{ username }}/{{ prevPage }}">< Previous Page</a>
+            {% endif %}
+            {% if hasNext %}
+                <a href="/profile/{{ username }}/{{ page }}">Next Page></a>
+            {% endif %}
         </div>
     </div>
 </div>

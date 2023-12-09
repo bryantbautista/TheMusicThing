@@ -249,16 +249,27 @@ def randomView(request):
     return redirect('/album/' + randomRating.AlbumID)
 
 def profileView(request, username):
+    return redirect('/profile/' + username + '/1')
+
+def profileNextPage(request, username, page):
+    if page < 1:
+        return redirect('/profile/' + username)
     try:
         user = User.objects.get(username=username)
     except User.DoesNotExist:
         return HttpResponse("User does not exist. <a href='/'>Go home</a>")
     allRatings = Ratings.objects.filter(Username=username)
+
+    if len(allRatings) == 0:
+        return render(request, 'profile.html', {'user': user, 'allRatings': allRatings, 'hasNext': len(allRatings) > 20 * page, 'username': username, 'page': page + 1, 'prevPage': page - 1})
+    if len(allRatings) < 20 * (page - 1):
+        return redirect('/profile/' + username)
+
     allIDs = ''
-    for rating in allRatings:
-        allIDs += rating.AlbumID + ','
+    for i in range(20 * (page - 1), min(len(allRatings), 20 * page)):
+        allIDs += allRatings[i].AlbumID + ','
     allIDs = allIDs[:-1]
-    
+
     token = getSpotifyToken()
     if token:
         params = {
@@ -273,8 +284,7 @@ def profileView(request, username):
             return HttpResponse("Error: Failed to connect to spotify. <a href='/'>Go Home</a>")
         for album in response['albums']:
             album['userRating'] = allRatings.get(AlbumID=album['id']).Rating
-        print(response['albums'][0])
-    return render(request, 'profile.html', {'user': user, 'allRatings': response['albums']})
+    return render(request, 'profile.html', {'user': user, 'allRatings': response['albums'], 'hasNext': len(allRatings) > 20 * page, 'username': username, 'page': page + 1, 'prevPage': page - 1})
 
 def searchView(request):
     token = getSpotifyToken()
