@@ -28,7 +28,7 @@
             <a href="/charts">Charts</a>
             <a href="/random">Random</a>
             {% if user.is_authenticated %}
-                <a href="/profile">Profile</a>
+                <a href="/profile/{{ user.username }}">Profile</a>
                 <a href="/logout">Log Out</a>
             {% else %}
                 <a href="/login">Login</a>

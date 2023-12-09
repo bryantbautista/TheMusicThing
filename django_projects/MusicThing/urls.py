@@ -18,6 +18,6 @@ urlpatterns = [
     path("feedback_submission/", views.feedback_submission, name="feedback_submission"),
     path("charts", views.chartsView, name="charts"),
     path("random", views.randomView, name="random"),
-    path("profile", views.profileView, name="profile"),
+    path("profile/<slug:username>", views.profileView, name="profile"),
     path("search", views.searchView, name="search")
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

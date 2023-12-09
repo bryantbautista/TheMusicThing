@@ -5,6 +5,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponse
 from .forms import LoginForm, RegistrationForm
 from MusicThing.models import Ratings, Feedback, Comment
+from django.contrib.auth.models import User
 import urllib.request
 import urllib.parse
 import json
@@ -247,8 +248,33 @@ def randomView(request):
     randomRating = random.choice(Ratings.objects.all())
     return redirect('/album/' + randomRating.AlbumID)
 
-def profileView(request):
-    return render(request, 'profile.html')
+def profileView(request, username):
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        return HttpResponse("User does not exist. <a href='/'>Go home</a>")
+    allRatings = Ratings.objects.filter(Username=username)
+    allIDs = ''
+    for rating in allRatings:
+        allIDs += rating.AlbumID + ','
+    allIDs = allIDs[:-1]
+    
+    token = getSpotifyToken()
+    if token:
+        params = {
+            'ids': allIDs
+        }
+        req = urllib.request.Request('https://api.spotify.com/v1/albums' + '?' + urllib.parse.urlencode(params))
+        req.add_header('Authorization', 'Bearer ' + token)
+        req.add_header('Accept', 'application/json')
+        try:
+            response = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))
+        except:
+            return HttpResponse("Error: Failed to connect to spotify. <a href='/'>Go Home</a>")
+        for album in response['albums']:
+            album['userRating'] = allRatings.get(AlbumID=album['id']).Rating
+        print(response['albums'][0])
+    return render(request, 'profile.html', {'user': user, 'allRatings': response['albums']})
 
 def searchView(request):
     token = getSpotifyToken()
