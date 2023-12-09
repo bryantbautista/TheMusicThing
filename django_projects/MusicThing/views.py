@@ -78,6 +78,10 @@ def albumView(request, albumID):
             return HttpResponse("Album not found.")
         artist = album['artists'][0]['name']
         genres = ", ".join([genre for genre in album['genres']])
+        if len(genres) == 0:
+            genres = getGenresOfArtist(album['artists'][0]['id'])
+        for i in range(0, len(genres)):
+            genres[i] = genres[i].title()
         releasedate = album['release_date']
         name = album['name']
         lengthseconds = sum(track['duration_ms'] for track in album['tracks']['items']) / 1000
@@ -272,3 +276,15 @@ def searchView(request):
                 album['avgRating'] = round(totalRating / len(curRatings), 2)
             album['numRatings'] = len(curRatings)
     return render(request, "search.html", {'albums': response['albums']['items'], 'query':query})
+
+def getGenresOfArtist(artistID):
+    token = getSpotifyToken()
+    if token:
+        req = urllib.request.Request('https://api.spotify.com/v1/artists/' +  artistID)
+        req.add_header('Authorization', 'Bearer ' + token)
+        req.add_header('Accept', 'application/json')
+        try:
+            response = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))
+        except:
+            return []
+        return response['genres']
