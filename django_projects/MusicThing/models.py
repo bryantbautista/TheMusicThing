@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
 
 # Create your models here.
 # class Artists(models.Model):
@@ -38,3 +40,30 @@ class Feedback(models.Model):
 
     def __str__(self):
         return f"Feedback received on {self.created_at}"
+<<<<<<< Updated upstream
+=======
+
+class Comment(models.Model):
+    CommentID = models.AutoField(primary_key=True)
+    AlbumID = models.CharField(max_length=22)
+    Username = models.CharField(max_length=30)
+    Text = models.TextField()
+    Timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.Username + ": " + self.Text
+    
+class UserProfileManager(models.Manager):
+    pass
+
+class UserProfile(models.Model):
+    #user = models.OneToOneField(User)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100, default='')
+    favorite_artist = models.CharField(max_length=100, default='')
+    # image = models.ImageField(upload_to='profile_image' , blank=True)
+
+
+    def __str__(self):
+        return self.user.username
+>>>>>>> Stashed changes

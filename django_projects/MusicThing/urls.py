@@ -17,5 +17,13 @@ urlpatterns = [
     path("feedback_submission/", views.feedback_submission, name="feedback_submission"),
     path("charts", views.chartsView, name="charts"),
     path("random", views.randomView, name="random"),
+<<<<<<< Updated upstream
     path("profile", views.profileView, name="profile")
+=======
+    path("profile/<slug:username>", views.profileView, name="profile"),
+    path("profile/<slug:username>/<int:page>", views.profileNextPage, name="profilenextpage"),
+    path("search", views.searchView, name="search"),
+    path("explore", views.exploreView, name="explore"),
+    path("editProfile/<slug:username>", views.editProfileView, name="editProfile")
+>>>>>>> Stashed changes
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

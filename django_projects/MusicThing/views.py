@@ -4,11 +4,18 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponse
 from .forms import LoginForm, RegistrationForm
+<<<<<<< Updated upstream
 from MusicThing.models import Ratings, Feedback
+=======
+from MusicThing.models import Ratings, Feedback, Comment
+from django.contrib.auth.models import User
+from MusicThing.forms import (EditProfileForm, ProfileForm)
+>>>>>>> Stashed changes
 import urllib.request
 import urllib.parse
 import json
 import random
+
 
 
 # Create your views here.
@@ -246,5 +253,185 @@ def randomView(request):
     randomRating = random.choice(Ratings.objects.all())
     return redirect('/album/' + randomRating.AlbumID)
 
+<<<<<<< Updated upstream
 def profileView(request):
     return render(request, 'profile.html')
+=======
+def profileView(request, username):
+    return redirect('/profile/' + username + '/1')
+
+def editProfileView(request, username):
+    # return HttpResponse("User does not exist. <a href='/'>Go home</a>")
+
+    if request.method == 'POST':
+        form = EditProfileForm(request.POST, instance=request.user)
+        profile_form = ProfileForm(request.POST, request.FILES, instance=request.user.userprofile)  # request.FILES is show the selected image or file
+
+        if form.is_valid() and profile_form.is_valid():
+            user_form = form.save()
+            custom_form = profile_form.save(False)
+            custom_form.user = user_form
+            custom_form.save()
+            return redirect('/profile/' + username)
+    else:
+        form = EditProfileForm(instance=request.user)
+        profile_form = None # ProfileForm(instance=request.user.userprofile)
+        args = {}
+        # args.update(csrf(request))
+        args['form'] = form
+        args['profile_form'] = profile_form
+        return render(request, 'editProfile.html', args)
+
+def profileNextPage(request, username, page):
+    if page < 1:
+        return redirect('/profile/' + username)
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        return HttpResponse("User does not exist. <a href='/'>Go home</a>")
+    
+    allRatings = Ratings.objects.filter(Username=username)
+
+    if len(allRatings) == 0:
+        return render(request, 'profile.html', {'user': user, 'allRatings': allRatings, 'hasNext': len(allRatings) > 20 * page, 'username': username, 'page': page + 1, 'prevPage': page - 1})
+    if len(allRatings) < 20 * (page - 1):
+        return redirect('/profile/' + username)
+
+    idList = []
+    for i in range(20 * (page - 1), min(len(allRatings), 20 * page)):
+        idList.append(allRatings[i].AlbumID)
+    idList.reverse()
+    allIDs = ','.join(idList)
+
+    token = getSpotifyToken()
+    if token:
+        params = {
+            'ids': allIDs
+        }
+        req = urllib.request.Request('https://api.spotify.com/v1/albums' + '?' + urllib.parse.urlencode(params))
+        req.add_header('Authorization', 'Bearer ' + token)
+        req.add_header('Accept', 'application/json')
+        try:
+            response = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))
+        except:
+            return HttpResponse("Error: Failed to connect to spotify. <a href='/'>Go Home</a>")
+        for album in response['albums']:
+            album['userRating'] = allRatings.get(AlbumID=album['id']).Rating
+    return render(request, 'profile.html', {'user': user, 'allRatings': response['albums'], 'hasNext': len(allRatings) > 20 * page, 'username': username, 'page': page + 1, 'prevPage': page - 1})
+
+def searchView(request):
+    token = getSpotifyToken()
+    query = request.GET['q']
+    if token:
+        params = {
+            'q': query,
+            'type': 'album'
+        }
+        req = urllib.request.Request('https://api.spotify.com/v1/search' + '?' + urllib.parse.urlencode(params))
+        req.add_header('Authorization', 'Bearer ' + token)
+        req.add_header('Accept', 'application/json')
+        try:
+            response = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))
+        except:
+            return HttpResponse("Error")
+        for album in response['albums']['items']:
+            curRatings = Ratings.objects.filter(AlbumID=album['id'])
+            totalRating = 0
+            for rating in curRatings:
+                totalRating += rating.Rating
+            if len(curRatings) == 0:
+                album['avgRating'] = "n/a"
+            else:
+                album['avgRating'] = round(totalRating / len(curRatings), 2)
+            album['numRatings'] = len(curRatings)
+    return render(request, "search.html", {'albums': response['albums']['items'], 'query':query})
+
+def exploreView(request):
+    if not request.user.is_authenticated:
+        return redirect('/')
+    
+    token = getSpotifyToken()
+        
+    allRatings = Ratings.objects.filter(Username=request.user.username)
+
+    allArtists = {}
+
+    
+    for i in range(0, len(allRatings), 20):
+        albumIDs = []
+        j = i
+        while j < len(allRatings) and j < i+20:
+            if allRatings[j].Rating >= 3:
+                albumIDs.append(allRatings[j].AlbumID)
+            j += 1
+        if token:
+            params = {
+                'ids': ','.join(albumIDs)
+            }
+            req = urllib.request.Request('https://api.spotify.com/v1/albums?' + urllib.parse.urlencode(params))
+            req.add_header('Authorization', 'Bearer ' + token)
+            req.add_header('Accept', 'application/json')
+            try:
+                response = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))
+            except:
+                return HttpResponse("Error connecting to Spotify. <a href='/'>Go Home</a>")
+            for album in response['albums']:
+                if album['artists'][0]['id'] in allArtists:
+                    allArtists[album['artists'][0]['id']] += 1
+                else:
+                    allArtists[album['artists'][0]['id']] = 1
+
+    allGenres = {}
+
+    artistList = list(allArtists.keys())
+    for i in range(0, len(artistList), 20):
+        j = i
+        artistIDs = []
+        while j < len(artistList) and j < i+10:
+            artistIDs.append(artistList[j])
+            j += 1
+
+        if token:
+            params = {
+                'ids': ','.join(artistIDs)
+            }
+            req = urllib.request.Request('https://api.spotify.com/v1/artists?' + urllib.parse.urlencode(params))
+            req.add_header('Authorization', 'Bearer ' + token)
+            req.add_header('Accept', 'application/json')
+            try:
+                response = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))
+            except:
+                return HttpResponse("Error connecting to Spotify. <a href='/'>Go Home</a>")
+            for artist in response['artists']:
+                for genre in artist['genres']:
+                    if genre in allGenres:
+                        allGenres[genre] += allArtists[artist['id']]
+                    else:
+                        allGenres[genre] = allArtists[artist['id']]
+    
+    topGenres = []
+    for genre in range(0, 5):
+        if len(allGenres) > 0:
+            newmax = max(allGenres, key= lambda x: allGenres[x])
+            topGenres.append(newmax)
+            allGenres.pop(newmax)
+        else:
+            return render(request, "explore.html", {'hasEnoughRatings': False})
+
+    for i in range(0, len(topGenres)):
+        topGenres[i] = topGenres[i].title()
+    return render(request, "explore.html", {'hasEnoughRatings': True, 'topGenres': topGenres})
+
+def getGenresOfArtist(artistID):
+    token = getSpotifyToken()
+    if token:
+        req = urllib.request.Request('https://api.spotify.com/v1/artists/' +  artistID)
+        req.add_header('Authorization', 'Bearer ' + token)
+        req.add_header('Accept', 'application/json')
+        try:
+            response = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))
+        except:
+            return []
+        return response['genres']
+    
+>>>>>>> Stashed changes
