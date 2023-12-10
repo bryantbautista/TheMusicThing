@@ -172,7 +172,13 @@
             {% for comment in comments %}
             <div class="comment">
                 <div class="username">{{ comment.Username }}</div>
-                <div class="timestamp">{{ comment.Timestamp|date:"Y-m-d H:i" }}</div>
+                <div class="timestamp">{{ comment.Timestamp|date:"Y-m-d H:i" }}
+                    {% if user.is_authenticated %}
+                        {% if user.username == comment.Username %}
+                            <a href="/delete/{{ albumID }}/{{ comment.CommentID }}">Delete Comment</a>
+                        {% endif %}
+                    {% endif %}
+                </div>
                 <div>{{ comment.Text }}</div>
             </div>
             {% empty %}
@@ -257,6 +263,7 @@
                 const timestampElement = document.createElement('div');
                 timestampElement.classList.add('timestamp');
                 timestampElement.textContent = timestamp;
+
                 {% if user.is_authenticated %}
                 const ratingElement = document.createElement('div');
                 ratingElement.classList.add('rating');

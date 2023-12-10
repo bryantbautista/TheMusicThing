@@ -21,5 +21,6 @@ urlpatterns = [
     path("profile/<slug:username>", views.profileView, name="profile"),
     path("profile/<slug:username>/<int:page>", views.profileNextPage, name="profilenextpage"),
     path("search", views.searchView, name="search"),
-    path("explore", views.exploreView, name="explore")
+    path("explore", views.exploreView, name="explore"),
+    path("delete/<slug:albumID>/<slug:commentID>", views.deleteView, name="delete")
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
