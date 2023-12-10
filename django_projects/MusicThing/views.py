@@ -4,12 +4,17 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponse
 from .forms import LoginForm, RegistrationForm
+from MusicThing.models import Ratings, Feedback
+from MusicThing.models import Ratings, Feedback, Comment
+from django.contrib.auth.models import User
+from MusicThing.forms import (EditProfileForm, ProfileForm)
 from MusicThing.models import Ratings, Feedback, Comment
 from django.contrib.auth.models import User
 import urllib.request
 import urllib.parse
 import json
 import random
+
 
 
 # Create your views here.
@@ -247,6 +252,34 @@ def randomView(request):
     randomRating = random.choice(Ratings.objects.all())
     return redirect('/album/' + randomRating.AlbumID)
 
+def profileView(request):
+    return render(request, 'profile.html')
+
+def profileView(request, username):
+    return redirect('/profile/' + username + '/1')
+
+def editProfileView(request, username):
+    # return HttpResponse("User does not exist. <a href='/'>Go home</a>")
+
+    if request.method == 'POST':
+        form = EditProfileForm(request.POST, instance=request.user)
+        profile_form = ProfileForm(request.POST, request.FILES, instance=request.user.userprofile)  # request.FILES is show the selected image or file
+
+        if form.is_valid() and profile_form.is_valid():
+            user_form = form.save()
+            custom_form = profile_form.save(False)
+            custom_form.user = user_form
+            custom_form.save()
+            return redirect('/profile/' + username)
+    else:
+        form = EditProfileForm(instance=request.user)
+        profile_form = None # ProfileForm(instance=request.user.userprofile)
+        args = {}
+        # args.update(csrf(request))
+        args['form'] = form
+        args['profile_form'] = profile_form
+        return render(request, 'editProfile.html', args)
+
 def profileView(request, username):
     return redirect('/profile/' + username + '/1')
 
@@ -401,7 +434,6 @@ def getGenresOfArtist(artistID):
         except:
             return []
         return response['genres']
-
 def deleteView(request, albumID, commentID):
     if not request.user.is_authenticated:
         return redirect('/')
