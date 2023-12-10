@@ -4,13 +4,12 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponse
 from .forms import LoginForm, RegistrationForm
-<<<<<<< Updated upstream
 from MusicThing.models import Ratings, Feedback
-=======
 from MusicThing.models import Ratings, Feedback, Comment
 from django.contrib.auth.models import User
 from MusicThing.forms import (EditProfileForm, ProfileForm)
->>>>>>> Stashed changes
+from MusicThing.models import Ratings, Feedback, Comment
+from django.contrib.auth.models import User
 import urllib.request
 import urllib.parse
 import json
@@ -84,33 +83,34 @@ def albumView(request, albumID):
         except:
             return HttpResponse("Album not found.")
         artist = album['artists'][0]['name']
-        genres = ""
-        for genre in album['genres']:
-            genres += genre
+        genres = ", ".join([genre for genre in album['genres']])
+        if len(genres) == 0:
+            genres = getGenresOfArtist(album['artists'][0]['id'])
+        for i in range(0, len(genres)):
+            genres[i] = genres[i].title()
         releasedate = album['release_date']
         name = album['name']
-        lengthseconds = 0
-        for track in album['tracks']['items']:
-            lengthseconds += track['duration_ms']
-        lengthseconds /= 1000
-        hours = int(lengthseconds // 3600)
-        minutes = int((lengthseconds % 3600) // 60)
-        seconds = int(lengthseconds % 60)
-        if hours != 0:
-            length = "" + str(hours) + " Hours, " + str(minutes) + " Minutes, " + str(seconds) + " Seconds"
-        else:
-            length = "" + str(minutes) + " Minutes, " + str(seconds) + " Seconds"
+        lengthseconds = sum(track['duration_ms'] for track in album['tracks']['items']) / 1000
+        hours, remainder = divmod(lengthseconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+        length = "{:02}:{:02}:{:02}".format(int(hours), int(minutes), int(seconds))
+        
         allRatings = Ratings.objects.filter(AlbumID=albumID)
-        if len(allRatings) == 0:
-            avgRating = "No ratings"
-        else:
-            avgRating = 0
-            for rating in allRatings:
-                avgRating += rating.Rating
-            avgRating /= len(allRatings)
+        avgRating = round(sum(rating.Rating for rating in allRatings) / len(allRatings), 2) if allRatings else "No ratings"
+
+        comments = Comment.objects.filter(AlbumID=albumID).order_by('-Timestamp')
+        
         return render(request, "albumPage.html", {'albumID':albumID, 'artist':artist, 'genres':genres, 'albumlink': album['external_urls']['spotify'],
-                                                  'releasedate':releasedate, 'name':name, 'coverurl':album['images'][0]['url'], 'length':length, 'avgRating':avgRating})
+                                                  'releasedate':releasedate, 'name':name, 'coverurl':album['images'][0]['url'], 'length':length, 'avgRating':avgRating, 'comments':comments})
     return HttpResponse("Connection to spotify failed.")
+
+def postComment(request, albumID):
+    if request.method == "POST" and request.user.is_authenticated:
+        comment_text = request.POST.get('comment', '')
+        if comment_text:
+            new_comment = Comment(AlbumID=albumID, Username=request.user.username, Text=comment_text)
+            new_comment.save()
+    return redirect('/album/' + albumID)
 
 def updateRating(request, albumID):
     if request.user.is_authenticated is False: # If user isn't authenticated, they shouldn't be able to rate an album.
@@ -136,7 +136,6 @@ def updateRating(request, albumID):
             else:
                 existingRating.update(Rating=received_data['rating']) # Update the existing entry in the DB
     return redirect('/album/' + albumID)
-
 
 def homeView(request):
     # TODO: Move me to external file.
@@ -253,10 +252,9 @@ def randomView(request):
     randomRating = random.choice(Ratings.objects.all())
     return redirect('/album/' + randomRating.AlbumID)
 
-<<<<<<< Updated upstream
 def profileView(request):
     return render(request, 'profile.html')
-=======
+
 def profileView(request, username):
     return redirect('/profile/' + username + '/1')
 
@@ -281,6 +279,9 @@ def editProfileView(request, username):
         args['form'] = form
         args['profile_form'] = profile_form
         return render(request, 'editProfile.html', args)
+
+def profileView(request, username):
+    return redirect('/profile/' + username + '/1')
 
 def profileNextPage(request, username, page):
     if page < 1:
@@ -433,5 +434,13 @@ def getGenresOfArtist(artistID):
         except:
             return []
         return response['genres']
-    
->>>>>>> Stashed changes
+def deleteView(request, albumID, commentID):
+    if not request.user.is_authenticated:
+        return redirect('/')
+    try:
+        comment = Comment.objects.get(CommentID=commentID)
+    except:
+        return HttpResponse("Comment not found.")
+    if comment.Username == request.user.username:
+        comment.delete()
+    return redirect('/album/' + albumID)

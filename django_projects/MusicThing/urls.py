@@ -12,26 +12,17 @@ urlpatterns = [
     path("register", views.registerView, name="register"),
     path("album/<slug:albumID>", views.albumView, name="album"),
     path("updateRating/<slug:albumID>", views.updateRating, name="updateRating"),
+    path("postComment/<slug:albumID>", views.postComment, name="postComment"),
     path("FAQ/", views.FAQView, name="FAQ"),
     path("support", views.supportView, name="support"),
     path("feedback_submission/", views.feedback_submission, name="feedback_submission"),
     path("charts", views.chartsView, name="charts"),
     path("random", views.randomView, name="random"),
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-    path("profile", views.profileView, name="profile")
-=======
-=======
->>>>>>> Stashed changes
     path("profile/<slug:username>", views.profileView, name="profile"),
     path("profile/<slug:username>/<int:page>", views.profileNextPage, name="profilenextpage"),
     path("search", views.searchView, name="search"),
     path("explore", views.exploreView, name="explore"),
-<<<<<<< Updated upstream
-    path("editProfile/<slug:username>", views.editProfileView, name="editProfile")
->>>>>>> Stashed changes
-=======
     path("editProfile/<slug:username>", views.editProfileView, name="editProfile"),
     path("delete/<slug:albumID>/<slug:commentID>", views.deleteView, name="delete")
->>>>>>> Stashed changes
+
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
