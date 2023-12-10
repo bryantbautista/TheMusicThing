@@ -401,4 +401,14 @@ def getGenresOfArtist(artistID):
         except:
             return []
         return response['genres']
-    
+
+def deleteView(request, albumID, commentID):
+    if not request.user.is_authenticated:
+        return redirect('/')
+    try:
+        comment = Comment.objects.get(CommentID=commentID)
+    except:
+        return HttpResponse("Comment not found.")
+    if comment.Username == request.user.username:
+        comment.delete()
+    return redirect('/album/' + albumID)
