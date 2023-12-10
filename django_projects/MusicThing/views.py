@@ -62,7 +62,7 @@ def loginView(request):
     return render(request, "registration/login.html", {"form": form})
 
 def registerView(request):
-    if request.user.is_authenticated:
+    if request.user.is_authenticated: # The user shouldn't be able to access the register page if logged in
         return redirect('/')
     form = RegistrationForm()
     if request.method == "POST":
@@ -75,14 +75,14 @@ def registerView(request):
 def albumView(request, albumID):
     token = getSpotifyToken()
     if token:
-        req = urllib.request.Request('https://api.spotify.com/v1/albums/' + str(albumID))
+        req = urllib.request.Request('https://api.spotify.com/v1/albums/' + str(albumID)) # Defines the request for a single album
         req.add_header('Authorization', 'Bearer ' + token)
         req.add_header('Accept', 'application/json')
         try:
-            album = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))
+            album = json.loads(urllib.request.urlopen(req).read().decode('utf-8')) # Sends the request, saves response in 'album'
         except:
             return HttpResponse("Album not found.")
-        artist = album['artists'][0]['name']
+        artist = album['artists'][0]['name']                                    # Extracting album info from the response
         genres = ", ".join([genre for genre in album['genres']])
         if len(genres) == 0:
             genres = getGenresOfArtist(album['artists'][0]['id'])
@@ -95,19 +95,19 @@ def albumView(request, albumID):
         minutes, seconds = divmod(remainder, 60)
         length = "{:02}:{:02}:{:02}".format(int(hours), int(minutes), int(seconds))
         
-        allRatings = Ratings.objects.filter(AlbumID=albumID)
-        avgRating = round(sum(rating.Rating for rating in allRatings) / len(allRatings), 2) if allRatings else "No ratings"
+        allRatings = Ratings.objects.filter(AlbumID=albumID) # Searches the database for matching albumID
+        avgRating = round(sum(rating.Rating for rating in allRatings) / len(allRatings), 2) if allRatings else "No ratings" # Finds avg of all ratings of this album
 
-        comments = Comment.objects.filter(AlbumID=albumID).order_by('-Timestamp')
+        comments = Comment.objects.filter(AlbumID=albumID).order_by('-Timestamp') # Retreives comments from database, ordered by time posted
         
         return render(request, "albumPage.html", {'albumID':albumID, 'artist':artist, 'genres':genres, 'albumlink': album['external_urls']['spotify'],
                                                   'releasedate':releasedate, 'name':name, 'coverurl':album['images'][0]['url'], 'length':length, 'avgRating':avgRating, 'comments':comments})
     return HttpResponse("Connection to spotify failed.")
 
 def postComment(request, albumID):
-    if request.method == "POST" and request.user.is_authenticated:
+    if request.method == "POST" and request.user.is_authenticated: # Ensures user is logged in and user isn't accessing this by mistake
         comment_text = request.POST.get('comment', '')
-        if comment_text:
+        if comment_text:                                            # If a comment is received, save it to the database.
             new_comment = Comment(AlbumID=albumID, Username=request.user.username, Text=comment_text)
             new_comment.save()
     return redirect('/album/' + albumID)
@@ -121,15 +121,15 @@ def updateRating(request, albumID):
 
         token = getSpotifyToken()
         if token:
-            req = urllib.request.Request('https://api.spotify.com/v1/albums/' + str(albumID))
+            req = urllib.request.Request('https://api.spotify.com/v1/albums/' + str(albumID)) # Request for a single album
             req.add_header('Authorization', 'Bearer ' + token)
             req.add_header('Accept', 'application/json')
             try:
-                album = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))
+                album = json.loads(urllib.request.urlopen(req).read().decode('utf-8')) # Sends request
             except:
                 return HttpResponse("Album not found.")
             
-            existingRating = Ratings.objects.filter(Username=request.user.username, AlbumID=albumID)
+            existingRating = Ratings.objects.filter(Username=request.user.username, AlbumID=albumID) # Find a rating in the database from the logged in user, rating albumID
             if len(existingRating) == 0:
                 newRating = Ratings(Username=request.user.username, AlbumID=albumID, Rating=received_data['rating']) # Create a new entry and add it to the DB
                 newRating.save()
@@ -204,20 +204,20 @@ def feedback_submission(request):
 def chartsView(request):
     id_sum = {}
     id_count = {}
-
+    # Go through all ratings, saving the sum of all ratings to id_sum and the number of total ratings of each album to id_count
     for rating in Ratings.objects.all():
         id_sum[rating.AlbumID] = id_sum.get(rating.AlbumID, 0) + rating.Rating
         id_count[rating.AlbumID] = id_count.get(rating.AlbumID, 0) + 1
 
     id_avg = {}
     id_avg2 = {}
-
+    #Calculate each album's average rating, rounding to the 2nd decimal place
     for id, sum in id_sum.items():
         id_avg[id] = round(sum / id_count[id], 2)
         id_avg2[id] = round(sum / id_count[id], 2)
 
     topAlbums = []
-
+    #Extract the top 20 highest avg rating albums from id_avg, adding them to topAlbums
     for topAlbum in range(0, 20):
         if len(id_avg) > 0:
             newmax = max(id_avg, key= lambda x: id_avg[x])
@@ -228,9 +228,9 @@ def chartsView(request):
     token = getSpotifyToken()
     if token:
         params = {
-            'ids': ','.join(topAlbums)
+            'ids': ','.join(topAlbums) # Format the albumIDs as a string, separated by ,
         }
-        req = urllib.request.Request('https://api.spotify.com/v1/albums' + '?' + urllib.parse.urlencode(params))
+        req = urllib.request.Request('https://api.spotify.com/v1/albums' + '?' + urllib.parse.urlencode(params)) # Request for all top albums at once
         req.add_header('Authorization', 'Bearer ' + token)
         req.add_header('Accept', 'application/json')
         try:
@@ -240,7 +240,7 @@ def chartsView(request):
         
         albumInfo = []
         for i in range(0, len(response['albums'])):
-            albumInfo.append({'rank': i+1, 'img': response['albums'][i]['images'][0]['url'], 
+            albumInfo.append({'rank': i+1, 'img': response['albums'][i]['images'][0]['url'], # Add each album's info in a list to albumInfo
                               'title': response['albums'][i]['name'], 
                               'artist': response['albums'][i]['artists'][0]['name'], 
                               'avgrating': id_avg2[response['albums'][i]['id']], 
@@ -285,21 +285,21 @@ def profileView(request, username):
 
 def profileNextPage(request, username, page):
     if page < 1:
-        return redirect('/profile/' + username)
+        return redirect('/profile/' + username) # If user enters page less than 1, redirect to page 1
     try:
-        user = User.objects.get(username=username)
+        user = User.objects.get(username=username) # Checks if user exists
     except User.DoesNotExist:
         return HttpResponse("User does not exist. <a href='/'>Go home</a>")
     
     allRatings = Ratings.objects.filter(Username=username)
-
+    # user has no ratings, render the page with no ratings
     if len(allRatings) == 0:
         return render(request, 'profile.html', {'user': user, 'allRatings': allRatings, 'hasNext': len(allRatings) > 20 * page, 'username': username, 'page': page + 1, 'prevPage': page - 1})
-    if len(allRatings) < 20 * (page - 1):
+    if len(allRatings) < 20 * (page - 1): # If the user has typed in a page number that is too large, redirect them to the first page
         return redirect('/profile/' + username)
 
     idList = []
-    for i in range(20 * (page - 1), min(len(allRatings), 20 * page)):
+    for i in range(20 * (page - 1), min(len(allRatings), 20 * page)): # Iterates through allRatings, skipping albums from previous pages, and adding the albums to idList
         idList.append(allRatings[i].AlbumID)
     idList.reverse()
     allIDs = ','.join(idList)
@@ -309,7 +309,7 @@ def profileNextPage(request, username, page):
         params = {
             'ids': allIDs
         }
-        req = urllib.request.Request('https://api.spotify.com/v1/albums' + '?' + urllib.parse.urlencode(params))
+        req = urllib.request.Request('https://api.spotify.com/v1/albums' + '?' + urllib.parse.urlencode(params)) # Request for 20 albums at a time
         req.add_header('Authorization', 'Bearer ' + token)
         req.add_header('Accept', 'application/json')
         try:
@@ -317,7 +317,7 @@ def profileNextPage(request, username, page):
         except:
             return HttpResponse("Error: Failed to connect to spotify. <a href='/'>Go Home</a>")
         for album in response['albums']:
-            album['userRating'] = allRatings.get(AlbumID=album['id']).Rating
+            album['userRating'] = allRatings.get(AlbumID=album['id']).Rating # Get the user's rating for each album
     return render(request, 'profile.html', {'user': user, 'allRatings': response['albums'], 'hasNext': len(allRatings) > 20 * page, 'username': username, 'page': page + 1, 'prevPage': page - 1})
 
 def searchView(request):
@@ -328,15 +328,15 @@ def searchView(request):
             'q': query,
             'type': 'album'
         }
-        req = urllib.request.Request('https://api.spotify.com/v1/search' + '?' + urllib.parse.urlencode(params))
+        req = urllib.request.Request('https://api.spotify.com/v1/search' + '?' + urllib.parse.urlencode(params)) # Request to search for query
         req.add_header('Authorization', 'Bearer ' + token)
         req.add_header('Accept', 'application/json')
         try:
             response = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))
         except:
             return HttpResponse("Error")
-        for album in response['albums']['items']:
-            curRatings = Ratings.objects.filter(AlbumID=album['id'])
+        for album in response['albums']['items']: # Finds current number of ratings and avg rating for each result of search
+            curRatings = Ratings.objects.filter(AlbumID=album['id']) 
             totalRating = 0
             for rating in curRatings:
                 totalRating += rating.Rating
@@ -355,13 +355,13 @@ def exploreView(request):
         
     allRatings = Ratings.objects.filter(Username=request.user.username)
 
-    allArtists = {}
+    allArtists = {} # Spotify rarely gives albums or songs genre tags, so the artists' genres must be recorded
 
     
-    for i in range(0, len(allRatings), 20):
+    for i in range(0, len(allRatings), 20): # Iterates through all of the user's ratings, 20 at a time.
         albumIDs = []
         j = i
-        while j < len(allRatings) and j < i+20:
+        while j < len(allRatings) and j < i+20: 
             if allRatings[j].Rating >= 3:
                 albumIDs.append(allRatings[j].AlbumID)
             j += 1
@@ -376,7 +376,7 @@ def exploreView(request):
                 response = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))
             except:
                 return HttpResponse("Error connecting to Spotify. <a href='/'>Go Home</a>")
-            for album in response['albums']:
+            for album in response['albums']:     # Add all artists the user has rated to allArtists
                 if album['artists'][0]['id'] in allArtists:
                     allArtists[album['artists'][0]['id']] += 1
                 else:
@@ -384,8 +384,8 @@ def exploreView(request):
 
     allGenres = {}
 
-    artistList = list(allArtists.keys())
-    for i in range(0, len(artistList), 20):
+    artistList = list(allArtists.keys()) 
+    for i in range(0, len(artistList), 20): # Go through the artists, 20 at a time
         j = i
         artistIDs = []
         while j < len(artistList) and j < i+10:
@@ -405,12 +405,12 @@ def exploreView(request):
                 return HttpResponse("Error connecting to Spotify. <a href='/'>Go Home</a>")
             for artist in response['artists']:
                 for genre in artist['genres']:
-                    if genre in allGenres:
+                    if genre in allGenres: # Add each genre to allGenres, keeping track of its frequency across the user's ratings
                         allGenres[genre] += allArtists[artist['id']]
                     else:
                         allGenres[genre] = allArtists[artist['id']]
     
-    topGenres = []
+    topGenres = [] # Extract the top 5 genres from the user's profile
     for genre in range(0, 5):
         if len(allGenres) > 0:
             newmax = max(allGenres, key= lambda x: allGenres[x])
