@@ -123,7 +123,8 @@
             <a href="/charts">Charts</a>
             <a href="/random">Random</a>
             {% if user.is_authenticated %}
-                <a href="/profile">Profile</a>
+                <a href="/explore">Explore</a>
+                <a href="/profile/{{ user.username }}">Profile</a>
                 <a href="/logout">Log Out</a>
             {% else %}
                 <a href="/login">Login</a>
@@ -148,7 +149,11 @@
             <a href="/login">Log in</a> or <a href="/register">register</a> to rate
         {% endif %}
         <div class="song-name">Artist: {{ artist }}</div>
-        <div class="song-name">Genres: {{ genres }}</div>
+        <div class="song-name">Genres: 
+            {% for genre in genres %}
+                {{ genre }}, 
+            {% endfor %}
+        </div>
         <div class="song-name">Release Date: {{ releasedate }}</div>
         <div class="song-name">Album: {{ name }}</div>
         <div class="song-name">Duration: {{ length }}</div>

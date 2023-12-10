@@ -5,6 +5,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponse
 from .forms import LoginForm, RegistrationForm
 from MusicThing.models import Ratings, Feedback, Comment
+from django.contrib.auth.models import User
 import urllib.request
 import urllib.parse
 import json
@@ -78,6 +79,10 @@ def albumView(request, albumID):
             return HttpResponse("Album not found.")
         artist = album['artists'][0]['name']
         genres = ", ".join([genre for genre in album['genres']])
+        if len(genres) == 0:
+            genres = getGenresOfArtist(album['artists'][0]['id'])
+        for i in range(0, len(genres)):
+            genres[i] = genres[i].title()
         releasedate = album['release_date']
         name = album['name']
         lengthseconds = sum(track['duration_ms'] for track in album['tracks']['items']) / 1000
@@ -126,7 +131,6 @@ def updateRating(request, albumID):
             else:
                 existingRating.update(Rating=received_data['rating']) # Update the existing entry in the DB
     return redirect('/album/' + albumID)
-
 
 def homeView(request):
     # TODO: Move me to external file.
@@ -243,8 +247,45 @@ def randomView(request):
     randomRating = random.choice(Ratings.objects.all())
     return redirect('/album/' + randomRating.AlbumID)
 
-def profileView(request):
-    return render(request, 'profile.html')
+def profileView(request, username):
+    return redirect('/profile/' + username + '/1')
+
+def profileNextPage(request, username, page):
+    if page < 1:
+        return redirect('/profile/' + username)
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        return HttpResponse("User does not exist. <a href='/'>Go home</a>")
+    
+    allRatings = Ratings.objects.filter(Username=username)
+
+    if len(allRatings) == 0:
+        return render(request, 'profile.html', {'user': user, 'allRatings': allRatings, 'hasNext': len(allRatings) > 20 * page, 'username': username, 'page': page + 1, 'prevPage': page - 1})
+    if len(allRatings) < 20 * (page - 1):
+        return redirect('/profile/' + username)
+
+    idList = []
+    for i in range(20 * (page - 1), min(len(allRatings), 20 * page)):
+        idList.append(allRatings[i].AlbumID)
+    idList.reverse()
+    allIDs = ','.join(idList)
+
+    token = getSpotifyToken()
+    if token:
+        params = {
+            'ids': allIDs
+        }
+        req = urllib.request.Request('https://api.spotify.com/v1/albums' + '?' + urllib.parse.urlencode(params))
+        req.add_header('Authorization', 'Bearer ' + token)
+        req.add_header('Accept', 'application/json')
+        try:
+            response = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))
+        except:
+            return HttpResponse("Error: Failed to connect to spotify. <a href='/'>Go Home</a>")
+        for album in response['albums']:
+            album['userRating'] = allRatings.get(AlbumID=album['id']).Rating
+    return render(request, 'profile.html', {'user': user, 'allRatings': response['albums'], 'hasNext': len(allRatings) > 20 * page, 'username': username, 'page': page + 1, 'prevPage': page - 1})
 
 def searchView(request):
     token = getSpotifyToken()
@@ -272,3 +313,92 @@ def searchView(request):
                 album['avgRating'] = round(totalRating / len(curRatings), 2)
             album['numRatings'] = len(curRatings)
     return render(request, "search.html", {'albums': response['albums']['items'], 'query':query})
+
+def exploreView(request):
+    if not request.user.is_authenticated:
+        return redirect('/')
+    
+    token = getSpotifyToken()
+        
+    allRatings = Ratings.objects.filter(Username=request.user.username)
+
+    allArtists = {}
+
+    
+    for i in range(0, len(allRatings), 20):
+        albumIDs = []
+        j = i
+        while j < len(allRatings) and j < i+20:
+            if allRatings[j].Rating >= 3:
+                albumIDs.append(allRatings[j].AlbumID)
+            j += 1
+        if token:
+            params = {
+                'ids': ','.join(albumIDs)
+            }
+            req = urllib.request.Request('https://api.spotify.com/v1/albums?' + urllib.parse.urlencode(params))
+            req.add_header('Authorization', 'Bearer ' + token)
+            req.add_header('Accept', 'application/json')
+            try:
+                response = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))
+            except:
+                return HttpResponse("Error connecting to Spotify. <a href='/'>Go Home</a>")
+            for album in response['albums']:
+                if album['artists'][0]['id'] in allArtists:
+                    allArtists[album['artists'][0]['id']] += 1
+                else:
+                    allArtists[album['artists'][0]['id']] = 1
+
+    allGenres = {}
+
+    artistList = list(allArtists.keys())
+    for i in range(0, len(artistList), 20):
+        j = i
+        artistIDs = []
+        while j < len(artistList) and j < i+10:
+            artistIDs.append(artistList[j])
+            j += 1
+
+        if token:
+            params = {
+                'ids': ','.join(artistIDs)
+            }
+            req = urllib.request.Request('https://api.spotify.com/v1/artists?' + urllib.parse.urlencode(params))
+            req.add_header('Authorization', 'Bearer ' + token)
+            req.add_header('Accept', 'application/json')
+            try:
+                response = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))
+            except:
+                return HttpResponse("Error connecting to Spotify. <a href='/'>Go Home</a>")
+            for artist in response['artists']:
+                for genre in artist['genres']:
+                    if genre in allGenres:
+                        allGenres[genre] += allArtists[artist['id']]
+                    else:
+                        allGenres[genre] = allArtists[artist['id']]
+    
+    topGenres = []
+    for genre in range(0, 5):
+        if len(allGenres) > 0:
+            newmax = max(allGenres, key= lambda x: allGenres[x])
+            topGenres.append(newmax)
+            allGenres.pop(newmax)
+        else:
+            return render(request, "explore.html", {'hasEnoughRatings': False})
+
+    for i in range(0, len(topGenres)):
+        topGenres[i] = topGenres[i].title()
+    return render(request, "explore.html", {'hasEnoughRatings': True, 'topGenres': topGenres})
+
+def getGenresOfArtist(artistID):
+    token = getSpotifyToken()
+    if token:
+        req = urllib.request.Request('https://api.spotify.com/v1/artists/' +  artistID)
+        req.add_header('Authorization', 'Bearer ' + token)
+        req.add_header('Accept', 'application/json')
+        try:
+            response = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))
+        except:
+            return []
+        return response['genres']
+    

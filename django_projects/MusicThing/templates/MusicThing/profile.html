@@ -66,6 +66,33 @@
                 </div>
             </div>
         </div>
+        <div class="charts-container" style="background-color: #e2e8f0;">
+            <div class="charts-header">
+                <div class="charts-data charts-cover">Album Cover</div>
+                <div class="charts-info charts-data">Title/Artist</div>
+                <div class="charts-ratings charts-data">Your Rating</div>
+            </div>
+            {% for rating in allRatings %}
+                <div class="charts-entry">
+                    <div class="charts-cover charts-data">
+                        <img src="{{ rating.images.0.url }}" width="150" height="150">
+                    </div>
+                    <div class="charts-info charts-data">
+                        <p><b><a href="/album/{{ rating.id }}">{{ rating.name }}</a></b></p>
+                        <p>By {{ rating.artists.0.name }}</p>
+                    </div>
+                    <div class="charts-ratings charts-data">
+                        <p>{{ rating.userRating }}/5</p>
+                    </div>
+                </div>
+            {% endfor %}
+            {% if page != 2 %}
+                <a href="/profile/{{ username }}/{{ prevPage }}">< Previous Page</a>
+            {% endif %}
+            {% if hasNext %}
+                <a href="/profile/{{ username }}/{{ page }}">Next Page></a>
+            {% endif %}
+        </div>
     </div>
 </div>
 {% endblock %} 
