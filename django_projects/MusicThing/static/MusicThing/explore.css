@@ -1,0 +1,29 @@
+.explore-container {
+    display: flex;
+    flex-direction: row;
+    align-content: stretch;
+    justify-content: center;
+    background-color: #e2e8f0;
+}
+
+.explore-entry {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    background: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 10px;
+    margin: 10px;
+    min-width: 200px;
+    max-width: 500px;
+    flex-grow: 1;
+}
+
+.explore-entry:hover {
+    background-color: #f0f0f0;
+}
+
+.explore-entry a{
+    text-decoration: none;
+}

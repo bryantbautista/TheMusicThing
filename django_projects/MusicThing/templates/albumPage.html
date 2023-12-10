@@ -2,10 +2,25 @@
 <html>
 <head>
     <title>My Album Page</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/92d70a2fd8.js" crossorigin="anonymous"></script>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'MusicThing/homePage.css' %}">
+    <link rel="stylesheet" href="{% static 'MusicThing/login.css' %}">
+    <link rel="stylesheet" href="{% static 'MusicThing/register.css' %}">
+    <link rel="stylesheet" href="{% static 'MusicThing/FAQ.css' %}">
+    <link rel="stylesheet" href="{% static 'MusicThing/support.css' %}">
+    <link rel="stylesheet" href="{% static 'MusicThing/charts.css' %}">
+    <link rel="stylesheet" href="{% static 'MusicThing/profile.css' %}">
+    <link rel="stylesheet" href="{% static 'MusicThing/search.css' %}">
     <style>
         /* Basic styling for the album page */
         body {
-            font-family: Arial, sans-serif;
+            /* font-family: Arial, sans-serif; */
             text-align: center;
             background-image: url('https://images.unsplash.com/photo-1525362081669-2b476bb628c3?auto=format&fit=crop&q=60&w=700&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxleHBsb3JlLWZlZWR8MTh8fHxlbnwwfHx8fHw%3D');
             background-size: auto;
@@ -101,20 +116,44 @@
     </style>
 </head>
 <body>
+    <header class="header">
+        <a href="/" class="logo">The Music Thing</a>
+
+        <nav class="navbar">
+            <a href="/charts">Charts</a>
+            <a href="/random">Random</a>
+            {% if user.is_authenticated %}
+                <a href="/explore">Explore</a>
+                <a href="/profile/{{ user.username }}">Profile</a>
+                <a href="/logout">Log Out</a>
+            {% else %}
+                <a href="/login">Login</a>
+                <a href="/register">Register</a>
+            {% endif %}
+        </nav>
+    </header>
     {% csrf_token %}
     <div class="album">
         <img src="{{ coverurl }}" alt="Album Cover">
         <div class="song-name">Song Name</div>
-        <div class="rating" id="rating">
-            <span class="star" data-rating="1"></span>
-            <span class="star" data-rating="2"></span>
-            <span class="star" data-rating="3"></span>
-            <span class="star" data-rating="4"></span>
-            <span class="star" data-rating="5"></span>
-        </div>
-        <div class="rating-display" id="rating-display">0/5 stars</div>
+        {% if user.is_authenticated %}
+            <div class="rating" id="rating">
+                <span class="star" data-rating="1"></span>
+                <span class="star" data-rating="2"></span>
+                <span class="star" data-rating="3"></span>
+                <span class="star" data-rating="4"></span>
+                <span class="star" data-rating="5"></span>
+            </div>
+            <div class="rating-display" id="rating-display">0/5 stars</div>
+        {% else %}
+            <a href="/login">Log in</a> or <a href="/register">register</a> to rate
+        {% endif %}
         <div class="song-name">Artist: {{ artist }}</div>
-        <div class="song-name">Genres: {{ genres }}</div>
+        <div class="song-name">Genres: 
+            {% for genre in genres %}
+                {{ genre }}, 
+            {% endfor %}
+        </div>
         <div class="song-name">Release Date: {{ releasedate }}</div>
         <div class="song-name">Album: {{ name }}</div>
         <div class="song-name">Duration: {{ length }}</div>
@@ -124,9 +163,28 @@
 
     <div class="comments-section">
         <h2>Listeners Comments</h2>
-        <div id="comments-list"></div>
-        <textarea id="comment-input" placeholder="Add your comment"></textarea>
-        <button onclick="addComment()">Add Comment</button>
+        <form action="/postComment/{{ albumID }}" method="post">
+            {% csrf_token %}
+            <textarea name="comment" id="comment-input" placeholder="Add your comment"></textarea>
+            <button type="submit">Add Comment</button>
+        </form>
+        <div id="comments-list">
+            {% for comment in comments %}
+            <div class="comment">
+                <div class="username">{{ comment.Username }}</div>
+                <div class="timestamp">{{ comment.Timestamp|date:"Y-m-d H:i" }}
+                    {% if user.is_authenticated %}
+                        {% if user.username == comment.Username %}
+                            <a href="/delete/{{ albumID }}/{{ comment.CommentID }}">Delete Comment</a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <div>{{ comment.Text }}</div>
+            </div>
+            {% empty %}
+            <p>No comments yet.</p>
+            {% endfor %}
+        </div>
     </div>
 
     <script>
@@ -191,7 +249,11 @@
                 commentElement.classList.add('comment');
 
                 // Simulate username, timestamp, and rating (replace with actual values)
-                const username = "Guest";
+                {% if user.is_authenticated %}
+                const username = "{{ user.username }}";
+                {% else %}
+                const username = "Guest"
+                {% endif %}
                 const timestamp = getCurrentTimestamp();
 
                 const usernameElement = document.createElement('div');
@@ -202,16 +264,20 @@
                 timestampElement.classList.add('timestamp');
                 timestampElement.textContent = timestamp;
 
+                {% if user.is_authenticated %}
                 const ratingElement = document.createElement('div');
                 ratingElement.classList.add('rating');
                 ratingElement.textContent = `Rating: ${userRating}/5 stars`;
+                {% endif %}
 
                 const commentTextElement = document.createElement('div');
                 commentTextElement.textContent = commentText;
 
                 commentElement.appendChild(usernameElement);
                 commentElement.appendChild(timestampElement);
+                {% if user.is_authenticated %}
                 commentElement.appendChild(ratingElement);
+                {% endif %}
                 commentElement.appendChild(commentTextElement);
 
                 commentsList.appendChild(commentElement);

@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="header-padding"></div>
+<div class="explore-container">
+    <h1>Popular Genres</h1>
+</div>
+<div class="explore-container">
+    <div class="explore-entry">
+        <a href="/search?q=Pop">
+            <img src="https://thumbs.dreamstime.com/b/vinyl-record-bluelabel-4092284.jpg" width="150" height="150">
+        </a>
+        <h2 style="margin: 5px;">Pop</h2>
+    </div>
+    <div class="explore-entry">
+        <a href="/search?q=Rock">
+            <img src="https://thumbs.dreamstime.com/b/vinyl-record-bluelabel-4092284.jpg" width="150" height="150">
+        </a>
+        <h2 style="margin: 5px;">Rock</h2>
+    </div>
+    <div class="explore-entry">
+        <a href="/search?q=Country">
+            <img src="https://thumbs.dreamstime.com/b/vinyl-record-bluelabel-4092284.jpg" width="150" height="150">
+        </a>
+        <h2 style="margin: 5px;">Country</h2>
+    </div>
+    <div class="explore-entry">
+        <a href="/search?q=Jazz">
+            <img src="https://thumbs.dreamstime.com/b/vinyl-record-bluelabel-4092284.jpg" width="150" height="150">
+        </a>
+        <h2 style="margin: 5px;">Jazz</h2>
+    </div>
+    <div class="explore-entry">
+        <a href="/search?q=RnB">
+            <img src="https://thumbs.dreamstime.com/b/vinyl-record-bluelabel-4092284.jpg" width="150" height="150">
+        </a>
+        <h2 style="margin: 5px;">R&B</h2>
+    </div>
+</div>
+{% if hasEnoughRatings %}
+<div class="explore-container">
+    <h1>Genres Similar to Albums You Enjoy</h1>
+</div>
+    <div class="explore-container">
+        {% for genre in topGenres %}
+            <div class="explore-entry">
+                <a href="/search?q={{ genre }}">
+                    <img src="https://thumbs.dreamstime.com/b/vinyl-record-bluelabel-4092284.jpg" width="150" height="150">
+                </a>
+                <a href="https://google.com"><h2 style="margin: 5px; text-align: center;">{{ genre }}</h2></a>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+<div class="explore-container">
+    <h3>Rate more albums to build your taste profile and get personal recommendations.</h3>
+</div>
+{% endif %}
+{% endblock %}

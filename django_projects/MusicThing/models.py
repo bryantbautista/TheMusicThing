@@ -40,8 +40,6 @@ class Feedback(models.Model):
 
     def __str__(self):
         return f"Feedback received on {self.created_at}"
-<<<<<<< Updated upstream
-=======
 
 class Comment(models.Model):
     CommentID = models.AutoField(primary_key=True)
@@ -66,4 +64,6 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return self.user.username
->>>>>>> Stashed changes
+
+        return self.Username + ": " + self.Text
+
