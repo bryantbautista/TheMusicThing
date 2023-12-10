@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="{% static 'MusicThing/charts.css' %}">
     <link rel="stylesheet" href="{% static 'MusicThing/profile.css' %}">
     <link rel="stylesheet" href="{% static 'MusicThing/search.css' %}">
+    <link rel="stylesheet" href="{% static 'MusicThing/explore.css' %}">
     <title>The Music Thing</title>
 </head>
 
@@ -28,6 +29,7 @@
             <a href="/charts">Charts</a>
             <a href="/random">Random</a>
             {% if user.is_authenticated %}
+                <a href="/explore">Explore</a>
                 <a href="/profile/{{ user.username }}">Profile</a>
                 <a href="/logout">Log Out</a>
             {% else %}

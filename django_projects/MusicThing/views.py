@@ -132,7 +132,6 @@ def updateRating(request, albumID):
                 existingRating.update(Rating=received_data['rating']) # Update the existing entry in the DB
     return redirect('/album/' + albumID)
 
-
 def homeView(request):
     # TODO: Move me to external file.
 
@@ -258,6 +257,7 @@ def profileNextPage(request, username, page):
         user = User.objects.get(username=username)
     except User.DoesNotExist:
         return HttpResponse("User does not exist. <a href='/'>Go home</a>")
+    
     allRatings = Ratings.objects.filter(Username=username)
 
     if len(allRatings) == 0:
@@ -265,10 +265,11 @@ def profileNextPage(request, username, page):
     if len(allRatings) < 20 * (page - 1):
         return redirect('/profile/' + username)
 
-    allIDs = ''
+    idList = []
     for i in range(20 * (page - 1), min(len(allRatings), 20 * page)):
-        allIDs += allRatings[i].AlbumID + ','
-    allIDs = allIDs[:-1]
+        idList.append(allRatings[i].AlbumID)
+    idList.reverse()
+    allIDs = ','.join(idList)
 
     token = getSpotifyToken()
     if token:
@@ -313,6 +314,82 @@ def searchView(request):
             album['numRatings'] = len(curRatings)
     return render(request, "search.html", {'albums': response['albums']['items'], 'query':query})
 
+def exploreView(request):
+    if not request.user.is_authenticated:
+        return redirect('/')
+    
+    token = getSpotifyToken()
+        
+    allRatings = Ratings.objects.filter(Username=request.user.username)
+
+    allArtists = {}
+
+    
+    for i in range(0, len(allRatings), 20):
+        albumIDs = []
+        j = i
+        while j < len(allRatings) and j < i+20:
+            if allRatings[j].Rating >= 3:
+                albumIDs.append(allRatings[j].AlbumID)
+            j += 1
+        if token:
+            params = {
+                'ids': ','.join(albumIDs)
+            }
+            req = urllib.request.Request('https://api.spotify.com/v1/albums?' + urllib.parse.urlencode(params))
+            req.add_header('Authorization', 'Bearer ' + token)
+            req.add_header('Accept', 'application/json')
+            try:
+                response = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))
+            except:
+                return HttpResponse("Error connecting to Spotify. <a href='/'>Go Home</a>")
+            for album in response['albums']:
+                if album['artists'][0]['id'] in allArtists:
+                    allArtists[album['artists'][0]['id']] += 1
+                else:
+                    allArtists[album['artists'][0]['id']] = 1
+
+    allGenres = {}
+
+    artistList = list(allArtists.keys())
+    for i in range(0, len(artistList), 20):
+        j = i
+        artistIDs = []
+        while j < len(artistList) and j < i+10:
+            artistIDs.append(artistList[j])
+            j += 1
+
+        if token:
+            params = {
+                'ids': ','.join(artistIDs)
+            }
+            req = urllib.request.Request('https://api.spotify.com/v1/artists?' + urllib.parse.urlencode(params))
+            req.add_header('Authorization', 'Bearer ' + token)
+            req.add_header('Accept', 'application/json')
+            try:
+                response = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))
+            except:
+                return HttpResponse("Error connecting to Spotify. <a href='/'>Go Home</a>")
+            for artist in response['artists']:
+                for genre in artist['genres']:
+                    if genre in allGenres:
+                        allGenres[genre] += allArtists[artist['id']]
+                    else:
+                        allGenres[genre] = allArtists[artist['id']]
+    
+    topGenres = []
+    for genre in range(0, 5):
+        if len(allGenres) > 0:
+            newmax = max(allGenres, key= lambda x: allGenres[x])
+            topGenres.append(newmax)
+            allGenres.pop(newmax)
+        else:
+            return render(request, "explore.html", {'hasEnoughRatings': False})
+
+    for i in range(0, len(topGenres)):
+        topGenres[i] = topGenres[i].title()
+    return render(request, "explore.html", {'hasEnoughRatings': True, 'topGenres': topGenres})
+
 def getGenresOfArtist(artistID):
     token = getSpotifyToken()
     if token:
@@ -324,3 +401,4 @@ def getGenresOfArtist(artistID):
         except:
             return []
         return response['genres']
+    

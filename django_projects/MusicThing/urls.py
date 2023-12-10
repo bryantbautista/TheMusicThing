@@ -20,5 +20,6 @@ urlpatterns = [
     path("random", views.randomView, name="random"),
     path("profile/<slug:username>", views.profileView, name="profile"),
     path("profile/<slug:username>/<int:page>", views.profileNextPage, name="profilenextpage"),
-    path("search", views.searchView, name="search")
+    path("search", views.searchView, name="search"),
+    path("explore", views.exploreView, name="explore")
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
